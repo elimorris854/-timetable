@@ -3,7 +3,7 @@
 void main() {
   //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
   // to see how IntelliJ IDEA suggests fixing it.
-  IO.println(String.format("I've changed the counter to 242"));
+  IO.println(String.format("I've changed the counter back to 10"));
 
   for (int i = 1; i <= 10; i++) {
     //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
