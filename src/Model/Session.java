@@ -1,97 +1,154 @@
 package Model;
 
-import java.time.LocalTime;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Represents a single instance of a scheduled class (e.g., Lecture, Lab, Tutorial).
+ * It stores all relevant scheduling details and some logic for time overlap checking.
+ */
 public class Session {
-    private String sessionId;
+    private String sessionID;
     private String moduleCode;
-    private SessionType type;
+    private String sessionType;
+    private String lecturerID;
+    private String roomID;
+    private List<String> studentGroupIDs;
     private DayOfWeek day;
     private LocalTime startTime;
-    private int durationMinutes;
-    private String roomId;
-    private String lecturerId;
-    private List<String> studentGroupIds;
+    private int sessionDuration;
 
     /**
-     * Constructs a new Session object with all required details.
-     * @param sessionId A unique identifier for the session.
-     * @param moduleCode The code of the module this session belongs to.
-     * @param type The type of teaching activity (LECTURE, LAB, TUTORIAL).
-     * @param day The day of the week the session is scheduled.
-     * @param startTime The time the session begins.
-     * @param durationMinutes The length of the session in minutes.
-     * @param roomId The ID of the room where the session takes place.
-     * @param lecturerId The ID of the lecturer teaching the session.
-     * @param studentGroupIds A list of IDs for the student groups attending.
+     * Constructs a scheduled Session, defining all its immutable properties.
+     *
+     * @param sessionID A unique ID for the session (e.g., "S001").
+     * @param moduleCode The module code this session belongs to (e.g., "CS4013").
+     * @param sessionType The type of session (e.g., "Lecture", "Lab", "Tutorial").
+     * @param lecturerID The ID of the lecturer assigned to the session.
+     * @param roomID The ID of the room assigned to the session.
+     * @param studentGroupIDs A list of unique IDs for the student groups attending.
+     * @param day The day of the week the session occurs.
+     * @param startTime The exact time the session begins.
+     * @param sessionDuration The length of the session in minutes.
      */
-    public Session(String sessionId, String moduleCode, SessionType type, DayOfWeek day, LocalTime startTime, int durationMinutes, String roomId, String lecturerId, List<String> studentGroupIds) {
-        this.sessionId = sessionId;
+    public Session(String sessionID,String moduleCode,String sessionType,String lecturerID,String roomID, List<String> studentGroupIDs, DayOfWeek day, LocalTime startTime,int sessionDuration){
+        this.sessionID=sessionID;
         this.moduleCode = moduleCode;
-        this.type = type;
+        this.sessionType = sessionType;
+        this.lecturerID = lecturerID;
+        this.roomID=roomID;
+        this.studentGroupIDs=studentGroupIDs;
         this.day = day;
         this.startTime = startTime;
-        this.durationMinutes = durationMinutes;
-        this.roomId = roomId;
-        this.lecturerId = lecturerId;
-        this.studentGroupIds = studentGroupIds;
+        this.sessionDuration=sessionDuration;
     }
 
     /**
-     * Calculates the end time of the session based on its start time and duration.
-     * @return The LocalTime when the session is scheduled to end.
+     * Gets the unique identifier for this session.
+     *
+     * @return The session ID string.
      */
-    public LocalTime getEndTime() {
-        return this.startTime.plusMinutes(this.durationMinutes);
+    public String getSessionID(){
+        return sessionID;
     }
 
     /**
-     * Determines if this session's time slot conflicts with another session's time slot.
-     * The check only considers time, day, duration, and not the resources involved.
-     * @param other The other Session object to check against.
-     * @return true if the sessions overlap in time on the same day, false otherwise.
+     * Gets the code of the module associated with this session.
+     *
+     * @return The module code string.
      */
-    public boolean isOverlap(Session other) {
-        if (!this.day.equals(other.day)) {
-            return false;
-        }
-
-        LocalTime thisEnd = this.getEndTime();
-        LocalTime otherEnd = other.getEndTime();
-
-        boolean startsBeforeOtherEnds = this.startTime.isBefore(otherEnd);
-        boolean endsAfterOtherStarts = thisEnd.isAfter(other.startTime);
-
-        return startsBeforeOtherEnds && endsAfterOtherStarts;
+    public String getModuleCode(){
+        return  moduleCode;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    /**
+     * Gets the type of the session (e.g., "Lecture", "Lab").
+     *
+     * @return The session type string.
+     */
+    public String getSessionType(){
+        return sessionType;
     }
 
-    public DayOfWeek getDay() {
+    /**
+     * Gets the ID of the lecturer assigned to teach this session.
+     *
+     * @return The lecturer ID string.
+     */
+    public String getLecturerID(){
+        return  lecturerID;
+    }
+
+    /**
+     * Gets the ID of the room where the session is held.
+     *
+     * @return The room ID string.
+     */
+    public String getRoomID(){
+        return roomID;
+    }
+
+    /**
+     * Gets the list of student group IDs attending this session.
+     *
+     * @return The list of student group IDs.
+     */
+    public List<String> getStudentGroupIDs(){
+        return studentGroupIDs;
+    }
+
+    /**
+     * Gets the day of the week the session is scheduled on.
+     *
+     * @return The {@link DayOfWeek} enum value.
+     */
+    public DayOfWeek getDay(){
         return day;
     }
 
-    public LocalTime getStartTime() {
+    /**
+     * Gets the start time of the session.
+     *
+     * @return The {@link LocalTime} object representing the start time.
+     */
+    public LocalTime getStartTime(){
         return startTime;
     }
 
-    public String getRoomId() {
-        return roomId;
+    /**
+     * Gets the duration of the session in minutes.
+     *
+     * @return The duration in minutes as an int.
+     */
+    public int getSessionDuration(){
+        return sessionDuration;
     }
 
-    public String getLecturerId() {
-        return lecturerId;
+    /**
+     * Checks if this session temporally overlaps with another session.
+     * Assumes sessions are on half-open intervals [start, end).
+     *
+     * @param other The other {@link Session} to compare against.
+     * @return true if the sessions are on the same day and their time ranges intersect, {@code false} otherwise.
+     */
+    public boolean overLapsWith(Session other){
+        if(!this.day.equals(other.day)){
+            return false;
+        }
+
+        LocalTime thisEndTime= this.startTime.plusMinutes(this.sessionDuration);
+        LocalTime otherEndTime=other.startTime.plusMinutes(other.sessionDuration);
+
+        if (thisEndTime.isBefore(other.startTime) || thisEndTime.equals(this.startTime)){
+            return false;
+        }
+
+        if(otherEndTime.isBefore((this.startTime)) || otherEndTime.equals(this.startTime)){
+            return false;
+        }
+        return true;
     }
 
-    public List<String> getStudentGroupIds() {
-        return studentGroupIds;
-    }
 
-    public SessionType getType() {
-        return type;
-    }
 }
