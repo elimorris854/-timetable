@@ -1,7 +1,7 @@
 package Model;
 
 import java.util.List;
-import java.util.*
+import java.util.*;
 
 /**
  * Represents a group of students who share a programme.
