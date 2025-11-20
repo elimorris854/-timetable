@@ -1,47 +1,67 @@
 package Model;
 
+/**
+ * Represents a physical room within the university
+ */
 public class Room {
-        private String name;
-        private String type;   // "Classroom" or "Lab"
-        private int capacity;
+    private final String id;
+    private final int capacity;
+    private final RoomType type;
+    private final Timetable timetable;
 
-        /**
-         * Creates a new Room object with the specified details.
-         *
-         * @param name     the name or identifier of the room (e.g., "CSG001")
-         * @param type     the type of the room ("Classroom" or "Lab")
-         * @param capacity the maximum number of students the room can hold
-         */
-        public Room(String name, String type, int capacity) {
-            this.name = name;
-            this.type = type;
-            this.capacity = capacity;
-        }
 
-        /**
-         * Returns the room name.
-         *
-         * @return the name of the room
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Returns the room type.
-         *
-         * @return the type of the room ("Classroom" or "Lab")
-         */
-        public String getType() {
-            return type;
-        }
-
-        /**
-         * Returns the maximum capacity of the room.
-         *
-         * @return the room capacity
-         */
-        public int getCapacity() {
-            return capacity;
-        }
+    /**
+     * Defines the set of valid types for any room.
+     */
+    public static enum RoomType {
+        CLASSROOM,
+        LAB
     }
+
+    /**
+     * Constructs a new Room object, initializing its physical attributes and creating its Timetable.
+     *
+     * @param id The unique identifier for the room (e.g., "KB1-001").
+     * @param capacity The maximum number of people the room can hold.
+     * @param type The type of room, defining its usage (e.g., CLASSROOM or LAB).
+     */
+    public Room(String id, int capacity, RoomType type) {
+        this.id = id;
+        this.capacity = capacity;
+        this.type = type;
+        this.timetable = new Timetable(id); // Timetable is owned by the Room's ID
+    }
+
+    /**
+     * Retrieves the unique identifier for the room.
+     *
+     * @return The room ID string.
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Retrieves the maximum capacity of the room (the number of students it can hold).
+     * @return The room's capacity (integer).
+     */
+    public int getCapacity() {
+        return capacity;
+    }
+
+    /**
+     * Retrieves the specific type of the room (e.g., CLASSROOM or LAB).
+     * @return The {@link RoomType} enum value.
+     */
+    public RoomType getType() {
+        return type;
+    }
+
+    /**
+     * Provides the timetable object associated with this room.
+     * @return The {@link Timetable} instance for this room.
+     */
+    public Timetable getTimetable() {
+        return timetable;
+    }
+}
