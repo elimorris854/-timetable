@@ -17,14 +17,16 @@ public class ProgrammeRepository {
      *
      * @param programme the Programme object to add
      */
-    public void add(Programme programme) {}
+    public void add(Programme programme) {
+        programmes.add(programme);
+    }
 
     /**
      * Returns all programmes stored in the repository.
      *
      * @return list of all programmes
      */
-    public List<Programme> getAll() { return null; }
+    public List<Programme> getAll() { return programmes; }
 
     /**
      * Loads programmes from a CSV file.
