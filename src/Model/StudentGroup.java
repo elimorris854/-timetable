@@ -18,10 +18,12 @@ private String programmeCode;
 /** Year of the programme. */
 private int year;
 
+private String groupId;
 
 /** List of student IDs within the group. */
 private List<String> studentIds;
 
+private Timetable timetable;
 
 /** Mapping from subgroup ID to list of student IDs. */
 private Map<String, List<String>> subgroups;
@@ -33,6 +35,15 @@ this.programmeCode = programmeCode;
 this.year = year;
 this.studentIds = studentIds;
 this.subgroups = new HashMap<>();
+this.timetable = new Timetable(groupId);
+}
+
+public String getGroupId() {
+        return groupId;
+}
+
+public Timetable getTimetable() {
+        return timetable;
 }
 
 
