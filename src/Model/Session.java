@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * Represents a single instance of a scheduled class (e.g., Lecture, Lab, Tutorial).
- * It stores all relevant scheduling details and some logic for time overlap checking.
  */
 public class Session {
     private String sessionID;

@@ -70,7 +70,7 @@ public class Timetable{
     }
 
     /**
-     * Checks if a proposed session conflicts with any existing scheduled sessions.
+     * Checks if a proposed session conflicts with any existing scheduled sessions on the timetable.
      *
      * @param newSession The session to check for potential conflicts.
      * @return {@code true} if a time conflict is detected, {@code false} otherwise.
