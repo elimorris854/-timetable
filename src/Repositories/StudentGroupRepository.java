@@ -20,14 +20,14 @@ public class StudentGroupRepository {
      *
      * @param studentGroup the StudentGroup object to add
      */
-    public void add(StudentGroup studentGroup) {}
+    public void add(StudentGroup studentGroup) {studentGroups.add(studentGroup);}
 
     /**
      * Returns all student groups stored in the repository.
      *
      * @return list of all student groups
      */
-    public List<StudentGroup> getAll() { return null; }
+    public List<StudentGroup> getAll() { return studentGroups; }
 
     /**
      * Loads student groups from a CSV file.
@@ -35,7 +35,9 @@ public class StudentGroupRepository {
      * @param filePath path to the CSV file
      * @throws Exception if the file cannot be read
      */
-    public void loadFromCSV(String filePath) throws Exception {}
+    public void loadFromCSV(String filePath) throws Exception {
+
+    }
 
     /**
      * Saves all student groups to a CSV file.
@@ -43,6 +45,8 @@ public class StudentGroupRepository {
      * @param filePath path to the CSV file
      * @throws Exception if the file cannot be written
      */
-    public void saveToCSV(String filePath) throws Exception {}
+    public void saveToCSV(String filePath) throws Exception {
+
+    }
 }
 
