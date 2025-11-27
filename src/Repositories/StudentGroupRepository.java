@@ -1,6 +1,13 @@
 package Repositories;
 
+import Model.Room;
+import Model.Student;
 import Model.StudentGroup;
+import Model.Timetable;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -31,12 +38,20 @@ public class StudentGroupRepository {
 
     /**
      * Loads student groups from a CSV file.
-     *
+     * CSVs should be of format groupID,programmeCode,year
      * @param filePath path to the CSV file
      * @throws Exception if the file cannot be read
      */
     public void loadFromCSV(String filePath) throws Exception {
-
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine();
+            while((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                studentGroups.add(new StudentGroup(parts[0], (parts[1]), Integer.parseInt(parts[2])));
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading csv file " + e);
+        }
     }
 
     /**
@@ -46,7 +61,16 @@ public class StudentGroupRepository {
      * @throws Exception if the file cannot be written
      */
     public void saveToCSV(String filePath) throws Exception {
-
+        try (PrintWriter pw = new PrintWriter(filePath)) {
+            pw.println("GroupID," + "ProgrammeCode," + "Year");
+            for(StudentGroup sg : studentGroups) {
+                pw.println(sg.getGroupId() + "," +
+                        sg.getProgrammeCode() + "," +
+                        sg.getYear());
+            }
+        } catch (Exception e) {
+            System.out.println("Error saving csv file " + e);
+        }
     }
 }
 
