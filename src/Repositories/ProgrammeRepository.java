@@ -63,7 +63,7 @@ public class ProgrammeRepository {
             for(Programme p : programmes) {
                 pw.println(p.getYear() + "," +
                         p.getSemester() + "," +
-                        p,getCode());
+                        p.getCode());
             }
         } catch (Exception e) {
             System.out.println("Error saving csv file " + e);

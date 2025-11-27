@@ -15,7 +15,8 @@ public class StudentGroup{
 private String programmeCode;
 
 
-/** Year of the programme. */
+
+    /** Year of the programme. */
 private int year;
 
 private String groupId;
@@ -29,11 +30,11 @@ private Timetable timetable;
 private Map<String, List<String>> subgroups;
 
 
-public StudentGroup(String groupId, String programmeCode, int year, List<String> studentIds) {
+public StudentGroup(String groupId, String programmeCode, int year) {
 this.groupId = groupId;
 this.programmeCode = programmeCode;
 this.year = year;
-this.studentIds = studentIds;
+this.studentIds = new ArrayList<>();
 this.subgroups = new HashMap<>();
 this.timetable = new Timetable(groupId);
 }
@@ -46,7 +47,13 @@ public Timetable getTimetable() {
         return timetable;
 }
 
+    public int getYear() {
+        return year;
+    }
 
+    public String getProgrammeCode() {
+        return programmeCode;
+    }
 /** Returns number of students in the main group. */
 public int size() {
 return studentIds.size();

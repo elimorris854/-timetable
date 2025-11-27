@@ -8,14 +8,30 @@ import java.util.*;
  */
 
 public class Programme{
+    private int year;
+    private int semester;
+    private String code;
+    private HashMap structure;
 
 /** Programme code (e.g., "CS"). */
-public Programme(String code, String name) {
-this.code = code;
-this.name = name;
-this.structure = new HashMap<>();
+public Programme(int year, int semester, String code) {
+    this.year = year;
+    this.semester = semester;
+    this.code = code;
+    this.structure = new HashMap<>();
 }
 
+    public int getYear() {
+        return year;
+    }
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public String getCode() {
+        return code;
+    }
 
 // ------------------ Structure Management ------------------
 
