@@ -22,8 +22,8 @@ public class Lecturer extends User {
      * @param name full name
      * @param email email address
      */
-    public Lecturer(String id, String name, String email) {
-        super(id, name, email);
+    public Lecturer(String id, String name, String email,String password) {
+        super(id, name, email,password);
         this.assignedModules = new ArrayList<>();
         this.timetable = new Timetable("Lecturer-" + id);
     }
