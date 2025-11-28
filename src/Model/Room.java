@@ -21,7 +21,7 @@ public class Room {
     /**
      * Constructs a new Room object, initializing its physical attributes and creating its Timetable.
      *
-     * @param id The unique identifier for the room (e.g., "KB1-001").
+     * @param id The unique id for the room (e.g., "KB1-001").
      * @param capacity The maximum number of people the room can hold.
      * @param type The type of room, defining its usage (e.g., CLASSROOM or LAB).
      */
@@ -33,7 +33,7 @@ public class Room {
     }
 
     /**
-     * Retrieves the unique identifier for the room.
+     * Retrieves the unique id for the room.
      *
      * @return The room ID string.
      */
