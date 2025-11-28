@@ -25,21 +25,41 @@ public class Programme {
         this.moduleCodes = moduleCodes;
     }
 
+    /**
+     * returns programme name
+     *
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * returns programme code
+     *
+     */
     public String getCode(){
         return code;
     }
+
+    /**
+     * returns programme year
+     *
+     */
     public int getYear() {
         return year;
     }
 
+    /**
+     * returns programme semester
+     *
+     */
     public int getSemester() {
         return semester;
     }
-
+    /**
+     * returns programme module
+     *
+     */
     public List<String> getModuleCodes(){
         return moduleCodes;
     }

@@ -38,26 +38,49 @@ public class Module {
         this.lecturerIDs = lecturerIDs;
     }
 
+    /**
+     * returns Module code
+     *
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * returns Module name
+     *
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * returns Module lecture hours
+     *
+     */
     public int getLectureHours() {
         return lectureHours;
     }
-
+    /**
+     * returns Module lab hours
+     *
+     */
     public int getLabHours() {
         return labHours;
     }
 
+    /**
+     * returns Module tutorial hours
+     *
+     */
     public int getTutorialHours() {
         return tutorialHours;
     }
 
+    /**
+     * returns Module lecture Ids
+     *
+     */
     public List<String> getLecturerIDs() {
         return lecturerIDs;
     }
