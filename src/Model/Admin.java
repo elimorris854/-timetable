@@ -12,8 +12,8 @@ public class Admin extends User {
      * @param name full name
      * @param email email address
      */
-    public Admin(String id, String name, String email) {
-        super(id, name, email);
+    public Admin(String id, String name, String email,String password){
+        super(id, name, email,password);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Admin extends User {
      * @param session session to remove
      */
     public void removeSession(Timetable timetable, Session session) {
-        timetable.removeSession(session);
+        timetable.removeSession(session.getSessionID());
     }
 }
 
