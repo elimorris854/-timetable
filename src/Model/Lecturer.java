@@ -28,15 +28,27 @@ public class Lecturer extends User {
         this.timetable = new Timetable("Lecturer-" + id);
     }
 
+    /**
+     *
+     * @return string role
+     */
     @Override
     public String getRole() {
         return "Lecturer";
     }
 
+    /**
+     * Returns module list
+     * @return module list
+     */
     public List<Module> getAssignedModules() {
         return assignedModules;
     }
 
+    /**
+     * Returns timetable
+     * @return timetable
+     */
     public Timetable getTimetable() {
         return timetable;
     }
