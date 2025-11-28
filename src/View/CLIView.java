@@ -1,274 +1,196 @@
 package View;
 
-import Model.Session;
-
+import Controller.*;
+import java.io.Console;
 import java.util.Scanner;
-import java.util.Map;
-import java.util.List;
-import java.time.DayOfWeek;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.time.LocalTime;
 
 /**
  * Command-line interface view for the timetabling system.
- * This class handles all user input and output, conforming to the MVC View pattern.
+ * This class implements AutoCloseable to ensure the Scanner resource is properly managed.
+ * It handles all user input and output for the CLI and serves as the main entry point
+ * for the application.
  */
-public class CLIView {
+public class CLIView implements AutoCloseable {
 
+    /**
+     * Scanner object used to read user input from the console (System.in).
+     */
     private final Scanner scanner;
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
+    /**
+     * Constructs a new CLIView and initializes the Scanner object for input.
+     */
     public CLIView() {
+        // We use System.in directly as it's the standard for CLIs
         this.scanner = new Scanner(System.in);
     }
 
     /**
-     * Displays a general message to the user.
+     * Closes the underlying Scanner resource to prevent resource leaks.
+     * This method should be called when the application shuts down.
+     */
+    @Override
+    public void close() {
+        if (scanner != null) {
+            scanner.close();
+        }
+    }
+
+    // --- Main Entry Point ---
+
+    /**
+     * The main entry point for the UL Timetabling System.
+     * It initializes the main controller, starts the application loop, and ensures
+     * the view resources are closed properly.
+     *
+     * @param args Command line arguments (not used).
+     */
+    public static void main(String[] args) {
+        System.out.println("--- UL Timetabling System ---");
+        try (CLIView view = new CLIView()) {
+            // Pass the initialized view instance to the controller
+            AppController controller = new AppController(view);
+            controller.run();
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred during application shutdown: " + e.getMessage());
+        }
+    }
+
+    // --- Output Methods ---
+
+    // (displayMessage, displaySeparator, displayTimetable methods remain the same)
+
+    /**
+     * Displays a general message to the user console.
+     *
+     * @param message The string message to be displayed.
      */
     public void displayMessage(String message) {
-        System.out.println("\n--- " + message + " ---");
+        System.out.println(message);
     }
 
     /**
-     * Displays an error message to the user.
+     * Prints a standard separator line to visually divide sections of output.
      */
-    public void displayError(String message) {
-        System.err.println("\n*** ERROR: " + message + " ***");
+    public void displaySeparator() {
+        System.out.println("------------------------------------");
     }
 
     /**
-     * Displays the welcome screen and returns the user's choice (1 for Login, 0 for Exit).
-     * @return The integer option selected by the user.
+     * Displays a formatted timetable string, wrapped by separators.
+     *
+     * @param timetable The pre-formatted string representation of the schedule/timetable.
      */
-    public int displayLoginMenu() {
-        System.out.println("\n**************************************************");
-        System.out.println("* University of Limerick Timetabling Application *");
-        System.out.println("**************************************************");
-        System.out.println("1. Login");
-        System.out.println("0. Exit");
-        System.out.print("Enter choice: ");
-        return getIntInput();
+    public void displayTimetable(String timetable) {
+        displaySeparator();
+        System.out.println("SCHEDULE:\n" + timetable);
+        displaySeparator();
     }
 
-    /**
-     * Displays a menu and captures user input.
-     * @param isAdmin True if the current user is an admin.
-     * @return The integer option selected by the user.
-     */
-    public int displayMenu(boolean isAdmin) {
-        displayMessage("Main Menu");
-        System.out.println("1. View My Timetable");
-        System.out.println("2. Query Timetable (Lecturer/Group/Room)");
-        if (isAdmin) {
-            System.out.println("3. Admin: Data Management (Load/Save/View All)");
-            System.out.println("4. Admin: User/Module/Room Management (CRUD)");
-            System.out.println("5. Admin: Generate Timetable (Auto-Schedule)");
-        }
-        System.out.println("0. Logout / Exit");
-        System.out.print("Enter option: ");
-        return getIntInput();
-    }
+    // --- Input Methods ---
 
     /**
-     * Displays the Admin Data Management Menu.
-     * @return The integer option selected by the user.
-     */
-    public int displayAdminDataMenu() {
-        displayMessage("Admin Data Management");
-        System.out.println("1. Load All Data from CSV Files");
-        System.out.println("2. Save All Data to CSV Files");
-        System.out.println("3. View Data Summary");
-        System.out.println("0. Back to Main Menu");
-        System.out.print("Enter option: ");
-        return getIntInput();
-    }
-
-    /**
-     * Displays the Timetable Query Menu.
-     * @return The integer option selected by the user.
-     */
-    public int displayQueryMenu() {
-        displayMessage("Timetable Query");
-        System.out.println("1. Query Lecturer Timetable");
-        System.out.println("2. Query Student Group Timetable");
-        System.out.println("3. Query Room Timetable");
-        System.out.println("0. Back to Main Menu");
-        System.out.print("Enter option: ");
-        return getIntInput();
-    }
-
-    /**
-     * Requests login credentials from the user.
-     * @return A String array containing {userId, password}.
+     * Requests and returns login credentials (email and password) from the user.
+     * Attempts to use System.console() for secure password input, falling back to
+     * Scanner if the console is unavailable (e.g., running in an IDE).
+     *
+     * @return A String array containing two elements: {email, password}.
      */
     public String[] requestLogin() {
-        displayMessage("Login Required");
-        System.out.print("Enter User ID: ");
-        String userId = scanner.nextLine();
-        System.out.print("Enter Password: ");
-        String password = scanner.nextLine();
-        return new String[]{userId, password};
-    }
+        displaySeparator();
+        System.out.println("Please Login");
 
-    /**
-     * Requests the specific item ID (e.g., Lecturer ID, Group Code, Room ID)
-     * the user wants to view the schedule for.
-     * @param type The type of item being requested (e.g., "Lecturer ID").
-     * @return The user's input string.
-     */
-    public String requestViewDetails(String type) {
-        System.out.print("Enter the " + type + " to view: ");
-        return scanner.nextLine();
-    }
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
 
-    /**
-     * Requests confirmation for a critical action, such as scheduling or saving data.
-     * @param action The action being confirmed (e.g., "reschedule all modules").
-     * @return True if the user enters 'yes', false otherwise.
-     */
-    public boolean requestConfirmation(String action) {
-        System.out.print("\nWARNING: Are you sure you want to " + action + "? (yes/no): ");
-        return scanner.nextLine().trim().equalsIgnoreCase("yes");
-    }
+        String password;
+        Console console = System.console();
 
-    /**
-     * Requests a generic string input from the user with a custom prompt.
-     * @param prompt The prompt to display to the user.
-     * @return The user's input string.
-     */
-    public String requestString(String prompt) {
-        System.out.print(prompt + ": ");
-        return scanner.nextLine();
-    }
-
-    /**
-     * Helper to safely read an integer from the user.
-     */
-    private int getIntInput() {
-        while (!scanner.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            scanner.next();
-            System.out.print("Enter option: ");
+        if (console != null) {
+            // Securely read password (will not echo characters)
+            System.out.print("Password: ");
+            char[] passwordArray = console.readPassword();
+            password = new String(passwordArray);
+        } else {
+            // Fallback for IDEs (insecure)
+            System.out.print("Password (Warning: characters will be visible): ");
+            password = scanner.nextLine();
         }
-        int input = scanner.nextInt();
-        scanner.nextLine();
-        return input;
+
+        return new String[]{email, password};
     }
 
     /**
-     * Requests a comma-separated list of IDs (e.g., Lecturer IDs, Group Codes) from the user.
-     * @param type The type of ID being requested (e.g., "Lecturer IDs").
-     * @return A List of trimmed String IDs.
+     * Prompts the user for a general string input.
+     *
+     * @param prompt The message displayed to the user before waiting for input.
+     * @return The string entered by the user.
      */
-    public List<String> requestListOfIds(String type) {
-        String input = requestString("Enter comma-separated list of " + type);
-        return Arrays.asList(input.split(",")).stream()
-                .map(String::trim)
-                .toList();
+    public String requestInput(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine();
     }
 
     /**
-     * Requests all necessary data fields to create a new Module object.
-     * @return A Map containing the raw string data for the Module's fields.
+     * Prompts the user for an integer choice and handles invalid number input.
+     * The method continuously loops until a valid integer is entered.
+     *
+     * @param prompt The message displayed to the user before waiting for input.
+     * @return The integer value entered by the user.
      */
-    public Map<String, String> requestNewModuleData() {
-        Map<String, String> data = new HashMap<>();
-        displayMessage("Enter New Module Details");
-
-        data.put("code", requestString("Module Code (e.g., CS4013)"));
-        data.put("name", requestString("Module Name"));
-
-        /* Hour fields need integer input */
-        System.out.print("Lecture Hours per week: ");
-        data.put("lectureHours", String.valueOf(getIntInput()));
-
-        System.out.print("Lab Hours per week: ");
-        data.put("labHours", String.valueOf(getIntInput()));
-
-        System.out.print("Tutorial Hours per week: ");
-        data.put("tutorialHours", String.valueOf(getIntInput()));
-
-        /* Lecturers assigned */
-        data.put("lecturerIds", requestListOfIds("Lecturer IDs (e.g., L12345678, L87654321)").toString());
-
-        return data;
-    }
-
-    /**
-     * A generic method to display a timetable map (DayOfWeek to List of Sessions).
-     * @param title The title for the timetable display.
-     * @param timetableMap The map containing DayOfWeek and its list of scheduled Sessions.
-     */
-    public void displayTimetable(String title, Map<DayOfWeek, List<Session>> timetableMap) {
-        System.out.println("\n=========================================================================================================================");
-        System.out.println("                                                            " + title);
-        System.out.println("=========================================================================================================================");
-
-        boolean foundSession = false;
-
-        /* Iterate through all days of the week in order, starting with Monday */
-        for (DayOfWeek day : DayOfWeek.values()) {
-            List<Session> sessions = timetableMap.getOrDefault(day, Collections.emptyList());
-
-            if (!sessions.isEmpty()) {
-                foundSession = true;
-
-                System.out.println("\n--- " + day.toString() + " ---");
-
-                /* Sort sessions by start time for clean display */
-                sessions.sort((s1, s2) -> s1.getStartTime().compareTo(s2.getStartTime()));
-
-                System.out.printf("%-10s %-10s %-10s %-10s %-15s %-15s %-40s%n",
-                        "Start", "End", "Type", "Module", "Lecturer", "Room", "Student Group(s)");
-                System.out.println("-------------------------------------------------------------------------------------------------------------------------");
-
-                for (Session session : sessions) {
-                    /* Calculate the end time using the user's LocalTime.plusMinutes() method */
-                    LocalTime endTime = session.getStartTime().plusMinutes(session.getSessionDuration());
-
-                    /* Displaying the list of student groups as a comma-separated string */
-                    String groupList = String.join(", ", session.getStudentGroupIDs());
-
-                    System.out.printf("%-10s %-10s %-10s %-10s %-15s %-15s %-40s%n",
-                            session.getStartTime().format(timeFormatter),
-                            endTime.format(timeFormatter),
-                            session.getSessionType(),
-                            session.getModuleCode(),
-                            session.getLecturerID(),
-                            session.getRoomID(),
-                            groupList);
+    public int getUserChoice(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String line = scanner.nextLine();
+                // Check if the user is trying to exit the input loop by providing '0'
+                if (line.trim().isEmpty()) {
+                    System.out.println("Input cannot be empty.");
+                    continue;
                 }
+                return Integer.parseInt(line.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
             }
         }
-
-        if (!foundSession) {
-            System.out.println("No sessions scheduled for this timetable.");
-        }
-
-        System.out.println("\n=========================================================================================================================");
     }
 
     /**
-     * Displays the application's data summary.
-     * @param summary A string containing the counts of all data objects.
+     * Displays the main menu options based on the provided user role and prompts for a choice.
+     *
+     * NOTE: The extensive role-based logic here violates strict MVC. In a professional app,
+     * the Controller should pass the full menu text/options to this method.
+     *
+     * @param role The role of the currently logged-in user ("Admin", "Lecturer", or "Student").
+     * @return The integer choice selected by the user. Returns 0 for unknown roles.
      */
-    public void displayDataSummary(String summary) {
-        displayMessage("Data Summary");
-        System.out.println(summary);
-    }
+    public int displayMenu(String role) {
+        displaySeparator();
+        System.out.println("Welcome, " + role + "!");
 
-    /**
-     * Pauses the CLI until the user presses Enter.
-     */
-    public void pressEnterToContinue() {
-        System.out.print("\nPress Enter to return to the menu...");
-        try {
-            scanner.nextLine();
-        } catch (Exception e) {
-            /* Ignore exception, user just pressed enter */
+        // The logic for *what* menu items exist is handled here, which is an MVC violation.
+        // It should be moved to the Controller.
+        if (role.equals("Admin")) {
+            System.out.println("1. View Timetable (Lecturer/Programme)");
+            System.out.println("2. Add New Module");
+            System.out.println("3. Add New Room");
+            System.out.println("4. Schedule New Session");
+            System.out.println("9. Logout");
+            System.out.println("0. Exit System");
+            return getUserChoice("Enter choice: ");
+        } else if (role.equals("Lecturer")) {
+            System.out.println("1. View My Timetable");
+            System.out.println("9. Logout");
+            System.out.println("0. Exit System");
+            return getUserChoice("Enter choice: ");
+        } else if (role.equals("Student")) {
+            System.out.println("1. View My Timetable");
+            System.out.println("9. Logout");
+            System.out.println("0. Exit System");
+            return getUserChoice("Enter choice: ");
         }
+
+        // Default/Unknown user
+        return 0;
     }
 }

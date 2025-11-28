@@ -5,6 +5,9 @@ package Controller;
  */
 public class AppController {
 
+    public AppController(View.CLIView view) {
+    }
+
     /**
      * Performs login for a user.
      */
