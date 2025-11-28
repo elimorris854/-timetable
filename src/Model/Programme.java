@@ -7,20 +7,27 @@ import java.util.*;
  * Each programme has one student group.
  */
 
-public class Programme{
+public class Programme {
+    private String code;
+    private String name;
     private int year;
     private int semester;
-    private String code;
-    private HashMap structure;
+    private List<String> moduleCodes;
 
-/** Programme code (e.g., "CS"). */
-public Programme(int year, int semester, String code) {
-    this.year = year;
-    this.semester = semester;
-    this.code = code;
-    this.structure = new HashMap<>();
-}
+    /**
+     * Programme code (e.g., "CS").
+     */
+    public Programme(String code, String name, int year, int semester, List<String> moduleCodes) {
+        this.code = code;
+        this.year = year;
+        this.semester = semester;
+        this.code = code;
+        this.moduleCodes = moduleCodes;
+    }
 
+    public String getCode(){
+        return code;
+    }
     public int getYear() {
         return year;
     }
@@ -29,47 +36,8 @@ public Programme(int year, int semester, String code) {
         return semester;
     }
 
-    public String getCode() {
-        return code;
+    public List<String> getModuleCodes(){
+        return moduleCodes;
     }
 
-// ------------------ Structure Management ------------------
-
-
-/** Adds a module to a specific year + semester. */
-public void addModule(int year, int semester, String moduleCode) {
-structure.computeIfAbsent(year, y -> new HashMap<>())
-.computeIfAbsent(semester, s -> new ArrayList<>())
-.add(moduleCode);
-}
-
-
-/** Removes a module from a specific year and semester. */
-public boolean removeModule(int year, int semester, String moduleCode) {
-if (structure.containsKey(year) && structure.get(year).containsKey(semester)) {
-return structure.get(year).get(semester).remove(moduleCode);
-}
-return false;
-}
-
-
-/** Returns list of module codes for a given year/semester. */
-public List<String> getModulesFor(int year, int semester) {
-return structure.getOrDefault(year, new HashMap<>())
-.getOrDefault(semester, new ArrayList<>());
-}
-
-
-/** Converts programme structure to multiple CSV rows. */
-public List<String> toCSVRows() {
-List<String> rows = new ArrayList<>();
-for (Integer year : structure.keySet()) {
-for (Integer sem : structure.get(year).keySet()) {
-String modules = String.join("|", structure.get(year).get(sem));
-rows.add(code + "," + name + "," + year + "," + sem + "," + modules);
-}
-}
-return rows;
-}
-  
 }
