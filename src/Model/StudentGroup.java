@@ -44,6 +44,10 @@ public class StudentGroup {
         return timetable;
     }
 
+    public String getProgrammeCode() {return programmeCode;}
+
+    public int getYear() {return year;}
+
     /** Returns number of students in the main group. */
     public int size() {
         return studentIds.size();
@@ -85,5 +89,8 @@ public class StudentGroup {
             subgroupParts.add(sgId + ":" + String.join("|", subgroups.get(sgId)));
         }
         return groupId + "," + programmeCode + "," + year + "," + students + "," + String.join(";", subgroupParts);
+    }
+
+    public List<String> getStudentIDs() { return studentIds;
     }
 }

@@ -45,6 +45,8 @@ public abstract class User {
         return email;
     }
 
+    public String getPassword() {return password;}
+
     public boolean checkPassword(String input) {
         return this.password.equals(input);
     }
