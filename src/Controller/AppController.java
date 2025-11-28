@@ -25,7 +25,7 @@ public class AppController {
 
     private User currentUser;
 
-    public AppController(View.CLIView view) {
+    public AppController() {
         // 1. Initialize all repositories
         this.userRepo = new UserRepository();
         this.roomRepo = new RoomRepository();
@@ -40,9 +40,6 @@ public class AppController {
 
         // 3. Load initial data
         seedData();
-    }
-
-    public AppController(View.CLIView view) {
     }
 
     // NOTE: This method is private and used only for initial setup.

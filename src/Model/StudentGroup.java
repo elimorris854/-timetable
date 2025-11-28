@@ -34,7 +34,7 @@ public StudentGroup(String groupId, String programmeCode, int year) {
 this.groupId = groupId;
 this.programmeCode = programmeCode;
 this.year = year;
-this.studentIds = new ArrayList<>();
+this.studentIds = studentIds;
 this.subgroups = new HashMap<>();
 this.timetable = new Timetable(groupId);
 }
