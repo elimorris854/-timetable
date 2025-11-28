@@ -6,74 +6,59 @@ import java.util.List;
  * Represents a module with a specific number of lectures/labs.
  * A module can be used in multiple programmes.
  */
-
 public class Module {
 
-/** Weekly lab contact hours. */
-private int labHours;
+    /** Code of the module (e.g. CS4013) */
+    private String code;
 
+    /** Name of the module */
+    private String name;
 
-/** Weekly tutorial contact hours. */
-private int tutorialHours;
+    /** Weekly lecture contact hours. */
+    private int lectureHours;
 
+    /** Weekly lab contact hours. */
+    private int labHours;
 
-/** Lecturers assigned to teach this module. */
-private List<String> lecturers;
+    /** Weekly tutorial contact hours. */
+    private int tutorialHours;
 
+    /** Lecturers assigned to teach this module. */
+    private List<String> lecturers;
 
-/**
-* Constructor for Module.
-*/
-public Module(String code, String name, int lectureHours, int labHours, int tutorialHours, List<String> lecturers) {
-this.code = code;
-this.name = name;
-this.lectureHours = lectureHours;
-this.labHours = labHours;
-this.tutorialHours = tutorialHours;
-this.lecturers = lecturers;
-}
+    /**
+     * Constructor for Module.
+     */
+    public Module(String code, String name, int lectureHours, int labHours, int tutorialHours, List<String> lecturers) {
+        this.code = code;
+        this.name = name;
+        this.lectureHours = lectureHours;
+        this.labHours = labHours;
+        this.tutorialHours = tutorialHours;
+        this.lecturers = lecturers;
+    }
 
+    public String getCode() {
+        return code;
+    }
 
-// ------------------ Getters and Setters ------------------
+    public String getName() {
+        return name;
+    }
 
+    public int getLectureHours() {
+        return lectureHours;
+    }
 
-public String getCode() { return code; }
-public void setCode(String code) { this.code = code; }
+    public int getLabHours() {
+        return labHours;
+    }
 
+    public int getTutorialHours() {
+        return tutorialHours;
+    }
 
-public String getName() { return name; }
-public void setName(String name) { this.name = name; }
-
-
-public int getLectureHours() { return lectureHours; }
-public void setLectureHours(int lectureHours) { this.lectureHours = lectureHours; }
-
-
-public int getLabHours() { return labHours; }
-public void setLabHours(int labHours) { this.labHours = labHours; }
-
-
-public int getTutorialHours() { return tutorialHours; }
-public void setTutorialHours(int tutorialHours) { this.tutorialHours = tutorialHours; }
-
-
-public List<String> getLecturers() { return lecturers; }
-public void setLecturers(List<String> lecturers) { this.lecturers = lecturers; }
-
-
-/**
-* Calculates total contact hours.
-*/
-public int getTotalContactHours() {
-return lectureHours + labHours + tutorialHours;
-}
-
-
-/**
-* Converts the module to a CSV row.
-*/
-public String toCSV() {
-return code + "," + name + "," + lectureHours + "," + labHours + "," + tutorialHours + "," + String.join("|", lecturers);
-}
-  
+    public List<String> getLecturers() {
+        return lecturers;
+    }
 }
