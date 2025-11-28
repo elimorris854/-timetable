@@ -24,18 +24,18 @@ public class Module {
     private int tutorialHours;
 
     /** Lecturers assigned to teach this module. */
-    private List<String> lecturers;
+    private List<String> lecturerIDs;
 
     /**
      * Constructor for Module.
      */
-    public Module(String code, String name, int lectureHours, int labHours, int tutorialHours, List<String> lecturers) {
+    public Module(String code, String name, int lectureHours, int labHours, int tutorialHours, List<String> lecturerIDs) {
         this.code = code;
         this.name = name;
         this.lectureHours = lectureHours;
         this.labHours = labHours;
         this.tutorialHours = tutorialHours;
-        this.lecturers = lecturers;
+        this.lecturerIDs = lecturerIDs;
     }
 
     public String getCode() {
@@ -58,7 +58,7 @@ public class Module {
         return tutorialHours;
     }
 
-    public List<String> getLecturers() {
-        return lecturers;
+    public List<String> getLecturerIDs() {
+        return lecturerIDs;
     }
 }

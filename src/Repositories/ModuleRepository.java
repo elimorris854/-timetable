@@ -83,7 +83,7 @@ public class ModuleRepository {
 
             // Write each module as a CSV line
             for (Module module : modules.values()) {
-                String lecturerIds = String.join("|", module.getLecturerIds());
+                String lecturerIds = String.join("|", module.getLecturerIDs());
 
                 writer.printf("%s,%s,%d,%d,%d,%s%n",
                         module.getCode(),
