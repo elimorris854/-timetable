@@ -12,6 +12,7 @@ import java.util.Map;
  * Manages the storage and retrieval of Module objects.
  */
 public class ModuleRepository {
+
     private Map<String, Module> modules;
 
     public ModuleRepository() {
@@ -40,7 +41,7 @@ public class ModuleRepository {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
-            br.readLine(); // Skip header
+            br.readLine();
             String line;
 
             while ((line = br.readLine()) != null) {
