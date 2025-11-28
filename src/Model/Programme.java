@@ -25,6 +25,10 @@ public class Programme {
         this.moduleCodes = moduleCodes;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getCode(){
         return code;
     }
