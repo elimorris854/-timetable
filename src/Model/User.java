@@ -14,6 +14,9 @@ public abstract class User {
     /** Email address of the user. */
     protected String email;
 
+    /** Password of the user. */
+    protected String password;
+
     /**
      * Constructor for creating a user.
      *
@@ -21,10 +24,11 @@ public abstract class User {
      * @param name full name
      * @param email email address
      */
-    public User(String id, String name, String email) {
+    public User(String id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
     // ----- Getters -----
@@ -41,16 +45,9 @@ public abstract class User {
         return email;
     }
 
-    // ----- Abstract -----
-
-    /**
-     * Returns a string describing the user type.
-     * @return user role, e.g. "Student", "Lecturer", "Admin".
-     */
-    public abstract String getRole();
-
-    @Override
-    public String toString() {
-        return String.format("[%s] %s (%s)", getRole(), name, email);
+    public boolean checkPassword(String input) {
+        return this.password.equals(input);
     }
+
+    public abstract String getRole();
 }
