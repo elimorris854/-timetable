@@ -38,24 +38,23 @@ public class ModuleRepository {
     /** Loads Module data from Modules.csv. */
     public void loadData() {
         String filePath = "Resources/Modules.csv";
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
             br.readLine();
             String line;
 
             while ((line = br.readLine()) != null) {
                 // Code, Name, Lecture_Hours, Lab_Hours, Tutorial_Hours, Lecturer_IDs
-                String[] data = line.split(",", -1);
+                String[] data = line.split(",");
                 if (data.length != 6) continue;
 
-                String code = data[0].trim();
-                String name = data[1].trim();
+                String code = data[0];
+                String name = data[1];
 
                 try {
-                    int lecHrs = Integer.parseInt(data[2].trim());
-                    int labHrs = Integer.parseInt(data[3].trim());
-                    int tutHrs = Integer.parseInt(data[4].trim());
+                    int lecHrs = Integer.parseInt(data[2]);
+                    int labHrs = Integer.parseInt(data[3]);
+                    int tutHrs = Integer.parseInt(data[4]);
 
                     // Parse pipe-separated Lecturer IDs
                     List<String> lecturerIds = new ArrayList<>();

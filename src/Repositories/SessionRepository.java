@@ -1,87 +1,177 @@
 package Repositories;
 
-import Model.Programme;
-import Model.Session;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import Model.*;
+import java.io.*;
+import java.time.DayOfWeek; // Required for Day enum
+import java.time.LocalTime; // Required for Time parsing
+import java.util.*;
 
 /**
- * Repository for storing Session objects.
- *
- * <p>A Session represents a scheduled teaching session, such as a
- * lecture, lab, or tutorial for a student group.</p>
+ * Manages the storage and retrieval of Session objects.
  */
 public class SessionRepository {
+    private Map<String, Session> sessions;
 
-    /** List storing all sessions. */
-    private List<Session> sessions = new ArrayList<>();
+    public SessionRepository() {
+        this.sessions = new HashMap<>();
+    }
 
-    /**
-     * Adds a session to the repository.
-     *
-     * @param session the Session object to add
+    public void add(Session session) {
+        sessions.put(session.getSessionID(), session);
+    }
+
+    public Session getById(String id) {
+        return sessions.get(id);
+    }
+
+    public List<Session> getAll() {
+        return new ArrayList<>(sessions.values());
+    }
+
+    public void remove(String id) {
+        sessions.remove(id);
+    }
+
+    /** * Loads Session data from Sessions.csv and schedules them into all relevant Timetables.
      */
-    public void add(Session session) {sessions.add(session);}
+    public void loadData(UserRepository userRepo, RoomRepository roomRepo,
+                         StudentGroupRepository groupRepo, ModuleRepository moduleRepo) {
+        String filePath = "Resources/Sessions.csv";
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
-    /**
-     * Returns all sessions stored in the repository.
-     *
-     * @return list of all sessions
-     */
-    public List<Session> getAll() { return sessions; }
+            br.readLine(); // Skip header
+            String line;
 
-    /**
-     * Loads sessions from a CSV file.
-     * CSVs should be of format sessionID,moduleCode,sessionType,lecturerID,roomID,studentGroupID1|studentGroupID2,day,startTime,duration
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be read
-     */
-    public void loadFromCSV(String filePath) throws Exception {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            while((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                List<String> studentGroupIDs = Arrays.asList(parts[5].split("\\|"));
-                DayOfWeek day = DayOfWeek.valueOf(parts[6].toUpperCase());
-                LocalTime time = LocalTime.parse(parts[7]);
-                sessions.add(new Session(parts[0], parts[1], parts[2], parts[3], parts[4], studentGroupIDs, day, time, Integer.parseInt(parts[8])));
+            while ((line = br.readLine()) != null) {
+                // ID, Module_Code, Type, Lecturer_ID, Room_ID, Group_IDs, Day, Start_Time, Duration_Minutes
+                String[] data = line.split(",", -1);
+                if (data.length != 9) continue;
+
+                String sessionId = data[0].trim();
+                String moduleCode = data[1].trim();
+                String sessionType = data[2].trim();
+                String lecturerId = data[3].trim();
+                String roomId = data[4].trim();
+
+                List<String> groupIds = new ArrayList<>();
+                if (!data[5].trim().isEmpty()) {
+                    // Parse pipe-separated Group IDs
+                    groupIds = Arrays.asList(data[5].split("\\|"));
+                }
+
+                try {
+                    DayOfWeek day = DayOfWeek.valueOf(data[6].trim().toUpperCase());
+                    LocalTime startTime = LocalTime.parse(data[7].trim());
+                    int duration = Integer.parseInt(data[8].trim());
+
+                    Session session = new Session(sessionId, moduleCode, sessionType, lecturerId,
+                            roomId, groupIds, day, startTime, duration);
+
+                    // --- CRITICAL STEP: SCHEDULE THE SESSION ---
+
+                    // 1. Get entities
+                    Room room = roomRepo.getById(roomId);
+                    User user = userRepo.getById(lecturerId);
+
+                    if (room == null) {
+                        System.err.println("Skipping session " + sessionId + ": Room " + roomId + " not found.");
+                        continue;
+                    }
+                    if (user == null || !(user instanceof Lecturer)) {
+                        System.err.println("Skipping session " + sessionId + ": Lecturer " + lecturerId + " not found or is not a Lecturer.");
+                        continue;
+                    }
+                    Lecturer lecturer = (Lecturer) user;
+
+                    // 2. Conflict Check and Commit (Sequential, with rollback logic)
+
+                    // Add to Room's timetable
+                    if (!room.getTimetable().addSession(session)) {
+                        System.err.println("Conflict detected: Room " + roomId + " is busy for session " + sessionId);
+                        continue;
+                    }
+
+                    // Add to Lecturer's timetable
+                    if (!lecturer.getTimetable().addSession(session)) {
+                        System.err.println("Conflict detected: Lecturer " + lecturerId + " is busy for session " + sessionId);
+                        room.getTimetable().removeSession(sessionId); // Rollback
+                        continue;
+                    }
+
+                    // Add to all Student Groups' timetables
+                    boolean groupConflict = false;
+                    List<StudentGroup> committedGroups = new ArrayList<>();
+                    for (String groupId : groupIds) {
+                        StudentGroup group = groupRepo.getById(groupId);
+                        if (group == null) {
+                            System.err.println("Warning: Group " + groupId + " not found for session " + sessionId);
+                            continue;
+                        }
+                        if (!group.getTimetable().addSession(session)) {
+                            System.err.println("Conflict detected: Group " + groupId + " has a clash for session " + sessionId);
+                            groupConflict = true;
+                            break;
+                        }
+                        committedGroups.add(group);
+                    }
+
+                    if (groupConflict) {
+                        // Rollback all successful additions
+                        room.getTimetable().removeSession(sessionId);
+                        lecturer.getTimetable().removeSession(sessionId);
+                        for (StudentGroup group : committedGroups) {
+                            group.getTimetable().removeSession(sessionId);
+                        }
+                        continue; // Skip adding the session to the repository
+                    }
+
+                    // 3. Add to the repository itself (Only if successfully scheduled everywhere)
+                    add(session);
+
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Skipping session " + sessionId + ": Invalid time/day/duration format: " + e.getMessage());
+                } catch (Exception e) {
+                    System.err.println("An unexpected error occurred while loading session " + sessionId + ": " + e.getMessage());
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error reading csv file " + e);
+            System.err.println("Error loading data from " + filePath + ": " + e.getMessage());
         }
     }
 
-    /**
-     * Saves all sessions to a CSV file.
-     *
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be written
-     */
-    public void saveToCSV(String filePath) throws Exception {
-        try (PrintWriter pw = new PrintWriter(filePath)) {
-            pw.println("sessionID,moduleCode,sessionType,lecturerID,roomID,studentGroupID1|studentGroupID2,day,startTime,duration");
-            for(Session s : sessions) {
-                String studentGroups = String.join("|", s.getStudentGroupIDs());
-                pw.println(s.getSessionID() + "," +
-                           s.getModuleCode() + "," +
-                           s.getSessionType() + "," +
-                           s.getLecturerID() + "," +
-                           s.getRoomID() + "," +
-                           studentGroups + "," +
-                           s.getDay() + "," +
-                           s.getStartTime() + "," +
-                           s.getSessionDuration());
+    /** Saves all Session data to Sessions.csv using PrintWriter */
+    public void saveData() {
+        String filePath = "output/csv/Sessions_out.csv";
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+
+            // Write CSV header
+            pw.println("ID,Module_Code,Type,Lecturer_ID,Room_ID,Group_IDs,Day,Start_Time,Duration_Minutes");
+
+            for (Session session : sessions.values()) {
+                String groupIds = String.join("|", session.getStudentGroupIDs());
+
+                String line = String.join(",",
+                        session.getSessionID(),
+                        session.getModuleCode(),
+                        session.getSessionType(),
+                        session.getLecturerID(),
+                        session.getRoomID(),
+                        groupIds,
+                        session.getDay().toString(),
+                        session.getStartTime().toString(),
+                        String.valueOf(session.getSessionDuration())
+                );
+
+                pw.println(line);
             }
-        } catch (Exception e) {
-            System.out.println("Error saving csv file " + e);
+            System.out.println("Sessions saved to " + filePath);
+
+        } catch (IOException e) {
+            System.err.println("Error saving sessions to " + filePath + ": " + e.getMessage());
         }
     }
+
 }
 

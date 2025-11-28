@@ -1,76 +1,111 @@
 package Repositories;
 
-import Model.Room;
-import Model.Student;
 import Model.StudentGroup;
-import Model.Timetable;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.List;
+import Model.Programme; // Required for ProgrammeRepo parameter (for dependency)
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Repository for storing StudentGroup objects.
- *
- * <p>A StudentGroup represents a set of students enrolled in a specific
- * year/programme, which may be split into smaller groups for lab/tutorial sessions.</p>
+ * Manages the storage and retrieval of StudentGroup objects.
  */
 public class StudentGroupRepository {
+    private Map<String, StudentGroup> groups;
 
-    /** List storing all student groups. */
-    private List<StudentGroup> studentGroups = new ArrayList<>();
+    public StudentGroupRepository() {
+        this.groups = new HashMap<>();
+    }
 
-    /**
-     * Adds a student group to the repository.
-     *
-     * @param studentGroup the StudentGroup object to add
+    public void add(StudentGroup group) {
+        groups.put(group.getGroupId(), group);
+    }
+
+    public StudentGroup getById(String id) {
+        return groups.get(id);
+    }
+
+    public List<StudentGroup> getAll() {
+        return new ArrayList<>(groups.values());
+    }
+
+    /** * Loads StudentGroup data from StudentGroups.csv.
+     * ProgrammeRepository is passed for potential future linking/validation,
+     * but not strictly required for the StudentGroup constructor.
      */
-    public void add(StudentGroup studentGroup) {studentGroups.add(studentGroup);}
+    public void loadData(ProgrammeRepository programmeRepo) {
+        String filePath = "Resources/StudentGroups.csv";
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
-    /**
-     * Returns all student groups stored in the repository.
-     *
-     * @return list of all student groups
-     */
-    public List<StudentGroup> getAll() { return studentGroups; }
+            br.readLine(); // Skip header
+            String line;
 
-    /**
-     * Loads student groups from a CSV file.
-     * CSVs should be of format groupID,programmeCode,year
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be read
-     */
-    public void loadFromCSV(String filePath) throws Exception {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            while((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                studentGroups.add(new StudentGroup(parts[0], (parts[1]), Integer.parseInt(parts[2])));
+            while ((line = br.readLine()) != null) {
+                // ID, Programme_Code, Year, Student_IDs
+                String[] data = line.split(",", -1);
+                if (data.length != 4) continue;
+
+                String id = data[0].trim();
+                String programmeCode = data[1].trim();
+
+                try {
+                    int year = Integer.parseInt(data[2].trim());
+
+                    // Parse pipe-separated Student IDs
+                    List<String> studentIds = new ArrayList<>();
+                    if (!data[3].trim().isEmpty()) {
+                        studentIds = new ArrayList<>(Arrays.asList(data[3].split("\\|")));
+                    }
+
+                    // A check that the programme exists (optional but recommended)
+                    Programme p = programmeRepo.getById(programmeCode);
+                    if (p == null) {
+                        System.err.println("Warning: Group " + id + " references non-existent Programme " + programmeCode);
+                    }
+
+                    StudentGroup group = new StudentGroup(id, programmeCode, year, studentIds);
+                    add(group);
+
+                } catch (NumberFormatException e) {
+                    System.err.println("Skipping group " + id + ": Invalid year format.");
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error reading csv file " + e);
+            System.err.println("Error loading data from " + filePath + ": " + e.getMessage());
         }
     }
 
-    /**
-     * Saves all student groups to a CSV file.
-     *
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be written
-     */
-    public void saveToCSV(String filePath) throws Exception {
-        try (PrintWriter pw = new PrintWriter(filePath)) {
-            pw.println("GroupID," + "ProgrammeCode," + "Year");
-            for(StudentGroup sg : studentGroups) {
-                pw.println(sg.getGroupId() + "," +
-                        sg.getProgrammeCode() + "," +
-                        sg.getYear());
+    /** Saves all StudentGroup data to StudentGroups.csv using PrintWriter */
+    public void saveData() {
+        String filePath = "output/csv/StudentGroups_out.csv";
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+
+            // Write CSV header
+            pw.println("ID,Programme_Code,Year,Student_IDs");
+
+            // Write each group
+            for (StudentGroup group : groups.values()) {
+                // Join student IDs with pipe '|'
+                String studentIds = String.join("|", group.getStudentIDs());
+
+                String line = String.join(",",
+                        group.getGroupId(),
+                        group.getProgrammeCode(),
+                        String.valueOf(group.getYear()),
+                        studentIds
+                );
+
+                pw.println(line);
             }
-        } catch (Exception e) {
-            System.out.println("Error saving csv file " + e);
+            System.out.println("Groups saved to " + filePath);
+
+        } catch (IOException e) {
+            System.err.println("Error saving student groups to " + filePath + ": " + e.getMessage());
         }
     }
+
 }
-

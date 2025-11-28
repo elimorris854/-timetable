@@ -8,45 +8,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages the storage and retrieval of User objects in memory.
- * Provides basic CRUD-like operations and a method to load data from a CSV file.
+ * Manages the storage and retrieval of User objects.
  */
 public class UserRepository {
     private Map<String, User> users;
 
-    /**
-     * Initializes a new UserRepository with an empty HashMap to store users.
-     */
     public UserRepository() {
         this.users = new HashMap<>();
     }
 
-    /**
-     * Adds a User object to the repository.
-     * The User's ID is used as the key.
-     *
-     * @param user The User object to be added.
-     */
     public void add(User user) {
         users.put(user.getId(), user);
     }
 
-    /**
-     * Retrieves a User object by its unique ID.
-     *
-     * @param id The ID of the user to retrieve.
-     * @return The User object corresponding to the ID, or null if not found.
-     */
     public User getById(String id) {
         return users.get(id);
     }
 
-    /**
-     * Retrieves a User object by their email address. The search is case-insensitive.
-     *
-     * @param email The email address of the user to retrieve.
-     * @return The User object with the matching email, or null if not found.
-     */
     public User getByEmail(String email) {
         for (User u : users.values()) {
             if (u.getEmail().equalsIgnoreCase(email)) {
@@ -56,24 +34,12 @@ public class UserRepository {
         return null;
     }
 
-    /**
-     * Returns a List containing all User objects currently in the repository.
-     * The list is a shallow copy of the internal collection.
-     *
-     * @return A List of all User objects.
-     */
     public List<User> getAll() {
         return new ArrayList<>(users.values());
     }
 
-    /**
-     * Loads User data from the "Resources/Users.csv" file.
-     * It reads each line, splits the data, and instantiates the appropriate subclass
-     * (Admin, Lecturer, or Student) based on the 'Role' field.
-     * Students are linked to their respective StudentGroup using the provided repository.
-     * Errors during file reading or group linking are printed to System.err.
-     *
-     * @param groupRepo The StudentGroupRepository required to fetch group details for Students.
+    /** * Loads User data from Users.csv.
+     * Requires StudentGroupRepository to link Student objects to their groups.
      */
     public void loadData(StudentGroupRepository groupRepo) {
         String filePath = "Resources/Users.csv";
@@ -125,4 +91,38 @@ public class UserRepository {
             System.err.println("Error loading data from " + filePath + ": " + e.getMessage());
         }
     }
+
+    /** Saves all User data to Users_out.csv using PrintWriter */
+    public void saveData() {
+        String filePath = "output/csv/Users_out.csv";
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+
+            // Write CSV header
+            pw.println("ID,Name,Email,Password,Role,Group_ID");
+
+            for (User user : users.values()) {
+                // Determine group ID if Student, else leave empty
+                String groupId = "";
+                if (user instanceof Student) {
+                    groupId = ((Student) user).getStudentGroup().getGroupId();
+                }
+
+                String line = String.join(",",
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getPassword(), // assuming password is stored in plain text; ideally hashed
+                        user.getRole(),
+                        groupId
+                );
+
+                pw.println(line);
+            }
+            System.out.println("Users saved to " + filePath);
+        } catch (IOException e) {
+            System.err.println("Error saving users to " + filePath + ": " + e.getMessage());
+        }
+    }
+
 }

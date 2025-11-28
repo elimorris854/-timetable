@@ -1,73 +1,90 @@
 package Repositories;
 
-import Model.Module;
 import Model.Room;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.List;
+import Model.Room.RoomType; // Import the inner enum
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Repository for storing Room objects.
+ * Manages the storage and retrieval of Room objects.
  */
 public class RoomRepository {
+    private Map<String, Room> rooms;
 
-    /** List storing all rooms. */
-    private List<Room> rooms = new ArrayList<>();
+    public RoomRepository() {
+        this.rooms = new HashMap<>();
+    }
 
-    /**
-     * Adds a room to the repository.
-     *
-     * @param room the Room object to add
-     */
     public void add(Room room) {
-        rooms.add(room);
+        rooms.put(room.getId(), room);
     }
 
-    /**
-     * Returns all rooms stored in the repository.
-     *
-     * @return list of all rooms
-     */
-    public List<Room> getAll() { return rooms; }
+    public Room getById(String id) {
+        return rooms.get(id);
+    }
 
-    /**
-     * Loads rooms from a CSV file.
-     * CSVs should be of format roomId,capacity,ROOMTYPE
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be read
-     */
-    public void loadFromCSV(String filePath) throws Exception {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            while((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                rooms.add(new Room(parts[0], Integer.parseInt(parts[1]), Room.RoomType.valueOf(parts[2])));
+    public List<Room> getAll() {
+        return new ArrayList<>(rooms.values());
+    }
+
+    /** Loads Room data from Rooms.csv. */
+    public void loadData() {
+        String filePath = "Resources/Rooms.csv";
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+
+            br.readLine(); // Skip header
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                // ID, Capacity, Type (e.g., "KB1-001,100,CLASSROOM")
+                String[] data = line.split(",");
+                if (data.length != 3) continue;
+
+                String id = data[0].trim();
+                String typeStr = data[2].trim().toUpperCase();
+
+                try {
+                    int capacity = Integer.parseInt(data[1].trim());
+                    // Ensure the RoomType enum is correctly parsed (must be CLASSROOM or LAB)
+                    RoomType type = RoomType.valueOf(typeStr);
+
+                    Room room = new Room(id, capacity, type);
+                    add(room);
+                } catch (NumberFormatException e) {
+                    System.err.println("Skipping room " + id + ": Invalid capacity format.");
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Skipping room " + id + ": Invalid RoomType '" + typeStr + "'.");
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error reading csv file " + e);
+            System.err.println("Error loading data from " + filePath + ": " + e.getMessage());
         }
     }
 
-    /**
-     * Saves all rooms to a CSV file.
-     *
-     * @param filePath path to the CSV file
-     * @throws Exception if the file cannot be written
-     */
-    public void saveToCSV(String filePath) throws Exception {
-        try (PrintWriter pw = new PrintWriter(filePath)) {
-            pw.println("RoomID," + "Capacity," + "ROOMTYPE");
-            for(Room r : rooms) {
-                pw.println(r.getId() + "," +
-                        r.getCapacity() + "," +
-                        r.getType());
+    /** Saves all Room data to Rooms.csv using PrintWriter */
+    public void saveData() {
+        String filePath = "output/csv/Rooms_out.csv";
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+
+            // Write CSV header
+            pw.println("ID,Capacity,Type");
+
+            // Write each room
+            for (Room room : rooms.values()) {
+                pw.println(room.getId() + "," + room.getCapacity() + "," + room.getType().name());
             }
-        } catch (Exception e) {
-            System.out.println("Error saving csv file " + e);
+
+            System.out.println("Rooms saved successfully to " + filePath);
+
+        } catch (IOException e) {
+            System.err.println("Error saving rooms to " + filePath + ": " + e.getMessage());
         }
     }
+
 }
 
