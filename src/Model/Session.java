@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Represents a single instance of a scheduled class (e.g., Lecture, Lab, Tutorial).
+ * It stores all relevant scheduling details and some logic for time overlap checking.
  */
 public class Session {
     private String sessionID;
@@ -31,16 +32,16 @@ public class Session {
      * @param startTime The exact time the session begins.
      * @param sessionDuration The length of the session in minutes.
      */
-    public Session(String sessionID,String moduleCode,String sessionType,String lecturerID,String roomID, List<String> studentGroupIDs, DayOfWeek day, LocalTime startTime,int sessionDuration){
-        this.sessionID=sessionID;
+    public Session(String sessionID, String moduleCode, String sessionType, String lecturerID, String roomID, List<String> studentGroupIDs, DayOfWeek day, LocalTime startTime, int sessionDuration) {
+        this.sessionID = sessionID;
         this.moduleCode = moduleCode;
         this.sessionType = sessionType;
         this.lecturerID = lecturerID;
-        this.roomID=roomID;
-        this.studentGroupIDs=studentGroupIDs;
+        this.roomID = roomID;
+        this.studentGroupIDs = studentGroupIDs;
         this.day = day;
         this.startTime = startTime;
-        this.sessionDuration=sessionDuration;
+        this.sessionDuration = sessionDuration;
     }
 
     /**
@@ -48,7 +49,7 @@ public class Session {
      *
      * @return The session ID string.
      */
-    public String getSessionID(){
+    public String getSessionID() {
         return sessionID;
     }
 
@@ -57,8 +58,8 @@ public class Session {
      *
      * @return The module code string.
      */
-    public String getModuleCode(){
-        return  moduleCode;
+    public String getModuleCode() {
+        return moduleCode;
     }
 
     /**
@@ -66,7 +67,7 @@ public class Session {
      *
      * @return The session type string.
      */
-    public String getSessionType(){
+    public String getSessionType() {
         return sessionType;
     }
 
@@ -75,8 +76,8 @@ public class Session {
      *
      * @return The lecturer ID string.
      */
-    public String getLecturerID(){
-        return  lecturerID;
+    public String getLecturerID() {
+        return lecturerID;
     }
 
     /**
@@ -84,7 +85,7 @@ public class Session {
      *
      * @return The room ID string.
      */
-    public String getRoomID(){
+    public String getRoomID() {
         return roomID;
     }
 
@@ -93,7 +94,7 @@ public class Session {
      *
      * @return The list of student group IDs.
      */
-    public List<String> getStudentGroupIDs(){
+    public List<String> getStudentGroupIDs() {
         return studentGroupIDs;
     }
 
@@ -102,7 +103,7 @@ public class Session {
      *
      * @return The {@link DayOfWeek} enum value.
      */
-    public DayOfWeek getDay(){
+    public DayOfWeek getDay() {
         return day;
     }
 
@@ -111,7 +112,7 @@ public class Session {
      *
      * @return The {@link LocalTime} object representing the start time.
      */
-    public LocalTime getStartTime(){
+    public LocalTime getStartTime() {
         return startTime;
     }
 
@@ -120,7 +121,7 @@ public class Session {
      *
      * @return The duration in minutes as an int.
      */
-    public int getSessionDuration(){
+    public int getSessionDuration() {
         return sessionDuration;
     }
 
@@ -131,23 +132,21 @@ public class Session {
      * @param other The other {@link Session} to compare against.
      * @return true if the sessions are on the same day and their time ranges intersect, {@code false} otherwise.
      */
-    public boolean overLapsWith(Session other){
-        if(!this.day.equals(other.day)){
+    public boolean overLapsWith(Session other) {
+        if (!this.day.equals(other.day)) {
             return false;
         }
 
-        LocalTime thisEndTime= this.startTime.plusMinutes(this.sessionDuration);
-        LocalTime otherEndTime=other.startTime.plusMinutes(other.sessionDuration);
+        LocalTime thisEndTime = this.startTime.plusMinutes(this.sessionDuration);
+        LocalTime otherEndTime = other.startTime.plusMinutes(other.sessionDuration);
 
-        if (thisEndTime.isBefore(other.startTime) || thisEndTime.equals(this.startTime)){
+        if (thisEndTime.isBefore(other.startTime) || thisEndTime.equals(this.startTime)) {
             return false;
         }
 
-        if(otherEndTime.isBefore((this.startTime)) || otherEndTime.equals(this.startTime)){
+        if (otherEndTime.isBefore((this.startTime)) || otherEndTime.equals(this.startTime)) {
             return false;
         }
         return true;
     }
-
-
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public class Student extends User {
 
     /** The student group this student belongs to. */
-    private String studentGroupID;
+    private StudentGroup studentGroup;
 
     /** The timetable specific to this student. */
     private Timetable timetable;
@@ -20,11 +20,12 @@ public class Student extends User {
      * @param id unique identifier
      * @param name full name
      * @param email email address
-     * @param studentGroupID the ID of the group the student is part of
+     * @param password login password
+     * @param studentGroup the group the student is part of
      */
-    public Student(String id, String name, String email, String studentGroupID) {
-        super(id, name, email);
-        this.studentGroupID = studentGroupID;
+    public Student(String id, String name, String email, String password, StudentGroup studentGroup) {
+        super(id, name, email, password);
+        this.studentGroup = studentGroup;
         this.timetable = new Timetable("Student-" + id);
     }
 
@@ -33,12 +34,20 @@ public class Student extends User {
         return "Student";
     }
 
-    public String getStudentGroupID() {
-        return studentGroupID;
+    public StudentGroup getStudentGroup() {
+        return studentGroup;
     }
 
     public Timetable getTimetable() {
         return timetable;
     }
-}
 
+    /**
+     * Enrolls the student in a list of modules via their programme or group.
+     *
+     * @param modules list of modules to enroll in
+     */
+    public void enrollInModules(List<Module> modules) {
+        studentGroup.addModules(modules);
+    }
+}
