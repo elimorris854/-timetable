@@ -1,21 +1,19 @@
 package View;
 
-import Controller.*;
-import java.io.Console;
+import Controller.AppController;
 import java.util.Scanner;
 
 /**
  * Command-line interface view for the timetabling system.
- * This class implements AutoCloseable to ensure the Scanner resource is properly managed.
  * It handles all user input and output for the CLI and serves as the main entry point
  * for the application.
  */
-public class CLIView implements AutoCloseable {
+public class CLIView  {
 
     /**
      * Scanner object used to read user input from the console (System.in).
      */
-    private final Scanner scanner;
+    private Scanner scanner;
 
     /**
      * Constructs a new CLIView and initializes the Scanner object for input.
@@ -25,16 +23,6 @@ public class CLIView implements AutoCloseable {
         this.scanner = new Scanner(System.in);
     }
 
-    /**
-     * Closes the underlying Scanner resource to prevent resource leaks.
-     * This method should be called when the application shuts down.
-     */
-    @Override
-    public void close() {
-        if (scanner != null) {
-            scanner.close();
-        }
-    }
 
     // --- Main Entry Point ---
 
@@ -47,13 +35,8 @@ public class CLIView implements AutoCloseable {
      */
     public static void main(String[] args) {
         System.out.println("--- UL Timetabling System ---");
-        try (CLIView view = new CLIView()) {
-            // Pass the initialized view instance to the controller
-            AppController controller = new AppController(view);
-            controller.run();
-        } catch (Exception e) {
-            System.err.println("An unexpected error occurred during application shutdown: " + e.getMessage());
-        }
+        AppController controller = new AppController();
+        controller.run(); // Start the main application loop in the controller
     }
 
     // --- Output Methods ---
@@ -102,23 +85,12 @@ public class CLIView implements AutoCloseable {
 
         System.out.print("Email: ");
         String email = scanner.nextLine();
-
-        String password;
-        Console console = System.console();
-
-        if (console != null) {
-            // Securely read password (will not echo characters)
-            System.out.print("Password: ");
-            char[] passwordArray = console.readPassword();
-            password = new String(passwordArray);
-        } else {
-            // Fallback for IDEs (insecure)
-            System.out.print("Password (Warning: characters will be visible): ");
-            password = scanner.nextLine();
-        }
-
+        System.out.print("Password: ");
+        // In a real application, we would use a Console for secure password input.
+        String password = scanner.nextLine();
         return new String[]{email, password};
     }
+
 
     /**
      * Prompts the user for a general string input.
@@ -143,11 +115,6 @@ public class CLIView implements AutoCloseable {
             try {
                 System.out.print(prompt);
                 String line = scanner.nextLine();
-                // Check if the user is trying to exit the input loop by providing '0'
-                if (line.trim().isEmpty()) {
-                    System.out.println("Input cannot be empty.");
-                    continue;
-                }
                 return Integer.parseInt(line.trim());
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number.");
