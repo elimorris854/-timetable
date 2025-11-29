@@ -1,0 +1,7 @@
+ID,Name,Email,Password,Role,Group_ID
+L002,Prof. Jane Doe,j.doe@uni.ie,pass123,Lecturer,
+L001,Dr. John Smith,j.smith@uni.ie,pass123,Lecturer,
+S1001,Peter Student,p.student@uni.ie,pass123,Student,CS1A
+S2001,Tom Student,t.student@uni.ie,pass123,Student,LM2B
+S1002,Mary Student,m.student@uni.ie,pass123,Student,CS1A
+A001,Alice Admin,a.admin@uni.ie,admin123,Admin,
