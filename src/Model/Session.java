@@ -11,6 +11,7 @@ import java.util.List;
 public class Session {
     private String sessionID;
     private String moduleCode;
+    private String moduleName;
     private String sessionType;
     private String lecturerID;
     private String roomID;
@@ -70,6 +71,12 @@ public class Session {
     public String getSessionType() {
         return sessionType;
     }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+
 
     /**
      * Gets the ID of the lecturer assigned to teach this session.
