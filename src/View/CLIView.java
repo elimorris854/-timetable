@@ -138,7 +138,7 @@ public class CLIView  {
         // The logic for *what* menu items exist is handled here, which is an MVC violation.
         // It should be moved to the Controller.
         if (role.equals("Admin")) {
-            System.out.println("1. View Timetable (Lecturer/Programme)");
+            System.out.println("1. View Timetable (Lecturer/Programme/Student)");
             System.out.println("2. Add New Module");
             System.out.println("3. Add New Room");
             System.out.println("4. Schedule New Session");

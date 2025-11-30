@@ -1,8 +1,12 @@
 package Controller;
 import Model.*;
+import Model.Session;
+import Model.Student;
+import Model.User;
 import Repositories.*;
-import Service.*;
-import View.*; // Import the view
+import Model.Module;
+import Service.SchedulingService;
+import View.CLIView; // Import the view
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalTime;
@@ -25,6 +29,9 @@ public class AppController {
 
     private User currentUser;
 
+    /**
+     * Constructor for AppController, initialises all repositories and schedulingService and CLIView.
+     */
     public AppController() {
         // 1. Initialize all repositories
         this.userRepo = new UserRepository();
@@ -35,19 +42,12 @@ public class AppController {
         this.programmeRepo = new ProgrammeRepository();
 
         // 2. Initialize the service and view
-        this.schedulingService = new SchedulingService(roomRepo, userRepo, groupRepo, sessionRepo);
+        this.schedulingService = new SchedulingService(roomRepo, groupRepo, sessionRepo, userRepo);
         this.cliView = new CLIView();
 
         // 3. Load initial data
         seedData();
     }
-
-    // NOTE: This method is private and used only for initial setup.
-
-
-    // ************************************************************
-    // * NEW RUN METHOD & MENU LOGIC                *
-    // ************************************************************
 
     /**
      * The main execution loop for the application, handling login and menu navigation.
@@ -59,9 +59,9 @@ public class AppController {
             while (currentUser == null) {
                 String[] credentials = cliView.requestLogin();
                 if (login(credentials[0], credentials[1])) {
-                    cliView.displayMessage(" Login Successful. Role: " + currentUser.getRole());
+                    cliView.displayMessage("Login Successful. Role: " + currentUser.getRole());
                 } else {
-                    cliView.displayMessage(" Login failed. Invalid email or password.");
+                    cliView.displayMessage("Login failed. Invalid email or password.");
                 }
             }
 
@@ -100,10 +100,9 @@ public class AppController {
         cliView.displaySeparator();
     }
 
-    // ************************************************************
-    // * MENU HANDLERS                           *
-    // ************************************************************
-
+    /**
+     * Seeds test data from CSVs using repositories.
+     */
     private void seedData() {
         System.out.println("Loading system data from CSV files...");
 
@@ -125,21 +124,27 @@ public class AppController {
         System.out.println("Data loading complete. System ready.");
     }
 
+    /**
+     * Handles the admin menu, takes in a user's choice and calls the corresponding action.
+     * @param choice the user's choice from the menu.
+     * @return true unless the choice is Exit, then false.
+     */
     private boolean handleAdminMenu(int choice) {
         switch (choice) {
-            case 1: // View Timetable (Lec/Prog)
+            case 1: // View Timetable (Student/Lec/Prog)
                 handleTimetableView();
                 return true;
             case 2: // Add New Module
-                // The implementation for this is complex and is kept simple for now
-                cliView.displayMessage("Functionality: Add New Module - Pending full implementation.");
+                handleAddModule();
                 return true;
             case 3: // Add New Room
-                // The implementation for this is complex and is kept simple for now
-                cliView.displayMessage("Functionality: Add New Room - Pending full implementation.");
+                handleAddRoom();
                 return true;
             case 4: // Schedule New Session
                 handleScheduleSession();
+                return true;
+            case 5: //Save to CSV
+                handleSaveCSVs();
                 return true;
             case 9: // Logout
                 return true;
@@ -151,6 +156,11 @@ public class AppController {
         }
     }
 
+    /**
+     * Handles the lecturer menu, takes in a user's choice and calls the corresponding action.
+     * @param choice the user's choice from the menu.
+     * @return true unless the choice is Exit, then false.
+     */
     private boolean handleLecturerMenu(int choice) {
         switch (choice) {
             case 1: // View My Timetable
@@ -167,6 +177,11 @@ public class AppController {
         }
     }
 
+    /**
+     * Handles the student menu, takes in a user's choice and calls the corresponding action.
+     * @param choice the user's choice from the menu.
+     * @return true unless the choice is Exit, then false.
+     */
     private boolean handleStudentMenu(int choice) {
         switch (choice) {
             case 1: // View My Timetable
@@ -183,15 +198,15 @@ public class AppController {
         }
     }
 
-    // ************************************************************
-    // * HELPER METHODS (Input/Output)              *
-    // ************************************************************
-
+    /**
+     * Handles the timetable viewing function for admins.
+     */
     private void handleTimetableView() {
         cliView.displayMessage("View Timetable Options:");
         cliView.displayMessage("1. Lecturer Timetable (Enter ID)");
         cliView.displayMessage("2. Programme Timetable (Enter Code)");
-        int choice = cliView.getUserChoice("Enter choice (1 or 2): ");
+        cliView.displayMessage("3. Student Timetable (Enter ID)");
+        int choice = cliView.getUserChoice("Enter choice (1 or 2 or 3): ");
 
         String targetID;
         String timetable = "Timetable not found.";
@@ -202,6 +217,9 @@ public class AppController {
         } else if (choice == 2) {
             targetID = cliView.requestInput("Enter Programme Code (e.g., CS): ");
             timetable = getProgrammeTimetable(targetID);
+        } else if (choice == 3) {
+            targetID = cliView.requestInput("Enter Student ID (e.g., S1001): ");
+            timetable = getStudentTimetable(targetID);
         } else {
             cliView.displayMessage("Invalid selection.");
             return;
@@ -210,6 +228,9 @@ public class AppController {
         cliView.displayTimetable(timetable);
     }
 
+    /**
+     * Handles the schedule session option for admins.
+     */
     private void handleScheduleSession() {
         cliView.displayMessage("--- Schedule New Session ---");
 
@@ -239,22 +260,29 @@ public class AppController {
 
             // Call the scheduling logic
             if (scheduleSession(newSession)) {
-                cliView.displayMessage("✅ Session " + id + " scheduled successfully.");
+                cliView.displayMessage("Session " + id + " scheduled successfully.");
             } else {
-                cliView.displayMessage("❌ Scheduling failed. A conflict was found. Check details above.");
+                cliView.displayMessage("Scheduling failed. A conflict was found. Check details above.");
             }
 
         } catch (IllegalArgumentException e) {
-            cliView.displayMessage("❌ Input Error: " + e.getMessage());
+            cliView.displayMessage("Input Error: " + e.getMessage());
         } catch (Exception e) {
-            cliView.displayMessage("❌ An unexpected error occurred: " + e.getMessage());
+            cliView.displayMessage("An unexpected error occurred: " + e.getMessage());
         }
     }
 
-
-    // ************************************************************
-    // * EXISTING BUSINESS LOGIC                    *
-    // ************************************************************
+    /**
+     * Handles the saving of all current timetable data to new output CSVs.
+     */
+    private void handleSaveCSVs() {
+        userRepo.saveData();
+        moduleRepo.saveData();
+        roomRepo.saveData();
+        sessionRepo.saveData();
+        groupRepo.saveData();
+        programmeRepo.saveData();
+    }
 
     /** Performs login for a user. */
     public boolean login(String email, String password) {
@@ -267,11 +295,10 @@ public class AppController {
         return false;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    /** Retrieves timetable for a student. */
+    /** Retrieves timetable for a student.
+     * @param studentId the ID of the student.
+     * @return the timetable for that student.
+     */
     public String getStudentTimetable(String studentId) {
         User u = userRepo.getById(studentId);
         if (u instanceof Student) {
@@ -282,50 +309,99 @@ public class AppController {
         return "Student not found or invalid ID.";
     }
 
-    /** Retrieves timetable for a lecturer. */
+    /** Retrieves timetable for a lecturer.
+     * @param lecturerId the lecturer ID.
+     * @return the timetable for the lecturer.
+     */
     public String getLecturerTimetable(String lecturerId) {
         User u = userRepo.getById(lecturerId);
 
-        if (u != null && u instanceof Lecturer) {
+        if (u instanceof Lecturer) {
             Lecturer lec = (Lecturer) u;
-            List<Session> sessions = lec.getTimetable().getSchedulesSessions();
 
-            if (sessions.isEmpty()) {
-                return "No sessions scheduled for " + lec.getName();
-            }
+            String timetableString = lec.getTimetable().toString();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("Timetable for ").append(lec.getName()).append(":\n");
-            for (Session s : sessions) {
-                sb.append("- ").append(s.getDay())
-                        .append(" at ").append(s.getStartTime())
-                        .append(": ").append(s.getModuleCode())
-                        .append(" (").append(s.getRoomID()).append(")\n");
-            }
-            return sb.toString();
+            return "Timetable for " + lec.getName() + ":\n" + timetableString;
         }
+
         return "Lecturer not found or invalid ID.";
     }
 
+    /**
+     * Gets timetable for programme (logic is not yet implemented).
+     * @param programmeCode the code for the programme.
+     * @return the timetable in String form.
+     */
     public String getProgrammeTimetable(String programmeCode) {
-        return "Programme timetable logic pending.";
+        return "Programme timetable logic not yet implemented.";
     }
 
-    public void addModule(String code, String name, int lecHrs, int labHrs, int tutHrs) {
-        if (currentUser instanceof Admin) {
-            List<String> lecs = new ArrayList<>();
-            Module m = new Module(code, name, lecHrs, labHrs, tutHrs, lecs);
-            moduleRepo.add(m);
+    /** Handles adding a new Module by Admin */
+    private void handleAddModule() {
+        if (!(currentUser instanceof Admin)) {
+            cliView.displayMessage("Only Admin can add modules.");
+            return;
+        }
+
+        try {
+            cliView.displayMessage("--- Add New Module ---");
+
+            String code = cliView.requestInput("Module Code (e.g., CS4013): ").toUpperCase();
+            String name = cliView.requestInput("Module Name: ");
+            int lecHrs = cliView.getUserChoice("Lecture Hours (integer): ");
+            int labHrs = cliView.getUserChoice("Lab Hours (integer): ");
+            int tutHrs = cliView.getUserChoice("Tutorial Hours (integer): ");
+
+            // Optional: Ask for lecturer IDs (comma-separated)
+            String lecturersStr = cliView.requestInput("Lecturer IDs (comma-separated, optional): ");
+            List<String> lecturerIds = lecturersStr.isEmpty() ? new ArrayList<>() : List.of(lecturersStr.split(","));
+
+            // Create and add the module
+            Module module = new Module(code, name, lecHrs, labHrs, tutHrs, lecturerIds);
+            moduleRepo.add(module);
+
+            cliView.displayMessage("Module " + code + " added successfully.");
+
+        } catch (NumberFormatException e) {
+            cliView.displayMessage("Invalid number format. Module not added.");
+        } catch (Exception e) {
+            cliView.displayMessage("Error adding module: " + e.getMessage());
         }
     }
 
-    public void addRoom(String roomId, int capacity, boolean isLab) {
-        if (currentUser instanceof Admin) {
+    /** Handles adding a new Room by Admin */
+    private void handleAddRoom() {
+        if (!(currentUser instanceof Admin)) {
+            cliView.displayMessage("Only Admin can add rooms.");
+            return;
+        }
+
+        try {
+            cliView.displayMessage("--- Add New Room ---");
+
+            String roomId = cliView.requestInput("Room ID (e.g., KB1-11): ").toUpperCase();
+            int capacity = cliView.getUserChoice("Room Capacity (integer): ");
+            String typeStr = cliView.requestInput("Is this a Lab? (yes/no): ").toLowerCase();
+            boolean isLab = typeStr.equals("yes") || typeStr.equals("y");
+
             Room.RoomType type = isLab ? Room.RoomType.LAB : Room.RoomType.CLASSROOM;
-            roomRepo.add(new Room(roomId, capacity, type));
+            Room room = new Room(roomId, capacity, type);
+            roomRepo.add(room);
+
+            cliView.displayMessage("Room " + roomId + " added successfully.");
+
+        } catch (NumberFormatException e) {
+            cliView.displayMessage("Invalid number format. Room not added.");
+        } catch (Exception e) {
+            cliView.displayMessage("Error adding room: " + e.getMessage());
         }
     }
 
+    /**
+     * Schedules a session using the scheduling service.
+     * @param session the session to be schduled.
+     * @return true if session was successfully scheduled, otherwise false.
+     */
     public boolean scheduleSession(Session session) {
         if (currentUser instanceof Admin) {
             return schedulingService.scheduleSession(session);

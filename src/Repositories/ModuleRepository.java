@@ -38,7 +38,8 @@ public class ModuleRepository {
     /** Loads Module data from Modules.csv. */
     public void loadData() {
         String filePath = "Resources/Modules.csv";
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 
             br.readLine();
             String line;
