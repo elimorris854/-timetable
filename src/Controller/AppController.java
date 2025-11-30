@@ -66,35 +66,51 @@ public class AppController {
             }
 
             // 2. Main Menu Loop (after successful login)
-            int choice;
+            int choice = 0;
             String role = currentUser.getRole();
 
+            // Define menu options here (MVC Compliance)
+            List<String> menuOptions = new ArrayList<>();
+            if (role.equals("Admin")) {
+                menuOptions.add("View Timetable (Lecturer/Programme/Student)");
+                menuOptions.add("Add New Module");
+                menuOptions.add("Add New Room");
+                menuOptions.add("Schedule New Session");
+                // menuOptions.add("Cancel Session"); // Feature reserved for teammate
+            } else if (role.equals("Lecturer") || role.equals("Student")) {
+                menuOptions.add("View My Timetable");
+            }
+
             do {
-                choice = cliView.displayMenu(role);
+                // Pass the list of options to the view
+                choice = cliView.displayMenu("Welcome, " + role + "!", menuOptions);
+
+                // Handle Logout and Exit first
+                if (choice == 9) {
+                    currentUser = null;
+                    break;
+                }
+                if (choice == 0) {
+                    running = false;
+                    break;
+                }
 
                 switch (role) {
                     case "Admin":
-                        running = handleAdminMenu(choice);
+                        handleAdminMenu(choice);
                         break;
                     case "Lecturer":
-                        running = handleLecturerMenu(choice);
+                        handleLecturerMenu(choice);
                         break;
                     case "Student":
-                        running = handleStudentMenu(choice);
+                        handleStudentMenu(choice);
                         break;
                     default:
                         // Logout and reset if role is unknown
                         currentUser = null;
-                        running = true;
                         break;
                 }
-            } while (running && currentUser != null && choice != 0 && choice != 9);
-
-            // Handle logout choice (choice 9)
-            if (choice == 9) {
-                currentUser = null;
-            }
-            // If running is false (choice 0), the outer loop terminates.
+            } while (running && currentUser != null);
         }
         cliView.displayMessage("System Shutting Down. Goodbye!");
         cliView.displaySeparator();
@@ -129,30 +145,23 @@ public class AppController {
      * @param choice the user's choice from the menu.
      * @return true unless the choice is Exit, then false.
      */
-    private boolean handleAdminMenu(int choice) {
+    private void handleAdminMenu(int choice) {
         switch (choice) {
             case 1: // View Timetable (Student/Lec/Prog)
                 handleTimetableView();
-                return true;
+                break;
             case 2: // Add New Module
                 handleAddModule();
-                return true;
+                break;
             case 3: // Add New Room
                 handleAddRoom();
-                return true;
+                break;
             case 4: // Schedule New Session
                 handleScheduleSession();
-                return true;
-            case 5: //Save to CSV
-                handleSaveCSVs();
-                return true;
-            case 9: // Logout
-                return true;
-            case 0: // Exit System
-                return false;
+                break;
             default:
                 cliView.displayMessage("Invalid choice. Please try again.");
-                return true;
+                break;
         }
     }
 
@@ -161,19 +170,15 @@ public class AppController {
      * @param choice the user's choice from the menu.
      * @return true unless the choice is Exit, then false.
      */
-    private boolean handleLecturerMenu(int choice) {
+    private void handleLecturerMenu(int choice) {
         switch (choice) {
             case 1: // View My Timetable
                 String timetable = getLecturerTimetable(currentUser.getId());
                 cliView.displayTimetable(timetable);
-                return true;
-            case 9: // Logout
-                return true;
-            case 0: // Exit System
-                return false;
+                break;
             default:
                 cliView.displayMessage("Invalid choice. Please try again.");
-                return true;
+                break;
         }
     }
 
@@ -182,19 +187,15 @@ public class AppController {
      * @param choice the user's choice from the menu.
      * @return true unless the choice is Exit, then false.
      */
-    private boolean handleStudentMenu(int choice) {
+    private void handleStudentMenu(int choice) {
         switch (choice) {
             case 1: // View My Timetable
                 String timetable = getStudentTimetable(currentUser.getId());
                 cliView.displayTimetable(timetable);
-                return true;
-            case 9: // Logout
-                return true;
-            case 0: // Exit System
-                return false;
+                break;
             default:
                 cliView.displayMessage("Invalid choice. Please try again.");
-                return true;
+                break;
         }
     }
 
