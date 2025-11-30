@@ -76,6 +76,7 @@ public class AppController {
                 menuOptions.add("Add New Module");
                 menuOptions.add("Add New Room");
                 menuOptions.add("Schedule New Session");
+                menuOptions.add("Save to CSVs");
                 // menuOptions.add("Cancel Session"); // Feature reserved for teammate
             } else if (role.equals("Lecturer") || role.equals("Student")) {
                 menuOptions.add("View My Timetable");
@@ -158,6 +159,9 @@ public class AppController {
                 break;
             case 4: // Schedule New Session
                 handleScheduleSession();
+                break;
+            case 5: // Save to CSVs
+                handleSaveCSVs();
                 break;
             default:
                 cliView.displayMessage("Invalid choice. Please try again.");
