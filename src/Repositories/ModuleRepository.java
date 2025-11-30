@@ -75,7 +75,7 @@ public class ModuleRepository {
     }
 
     public void saveData() {
-        String filePath = "Resources/Modules_out.csv";
+        String filePath = "output/csv/Modules_out.csv";
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
 
