@@ -77,5 +77,3 @@ when instantiated.
 -   No external libraries required (uses standard Java APIs)
 
 
-This project does not include a specified license. Add one if needed.
-
