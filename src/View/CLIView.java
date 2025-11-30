@@ -1,12 +1,11 @@
 package View;
 
-import Controller.AppController;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  * Command-line interface view for the timetabling system.
- * It handles all user input and output for the CLI and serves as the main entry point
- * for the application.
+ * It handles all user input and output for the CLI.
  */
 public class CLIView  {
 
@@ -23,25 +22,7 @@ public class CLIView  {
         this.scanner = new Scanner(System.in);
     }
 
-
-    // --- Main Entry Point ---
-
-    /**
-     * The main entry point for the UL Timetabling System.
-     * It initializes the main controller, starts the application loop, and ensures
-     * the view resources are closed properly.
-     *
-     * @param args Command line arguments (not used).
-     */
-    public static void main(String[] args) {
-        System.out.println("--- UL Timetabling System ---");
-        AppController controller = new AppController();
-        controller.run(); // Start the main application loop in the controller
-    }
-
     // --- Output Methods ---
-
-    // (displayMessage, displaySeparator, displayTimetable methods remain the same)
 
     /**
      * Displays a general message to the user console.
@@ -123,41 +104,23 @@ public class CLIView  {
     }
 
     /**
-     * Displays the main menu options based on the provided user role and prompts for a choice.
+     * Displays the main menu options based on the provided list options.
      *
-     * NOTE: The extensive role-based logic here violates strict MVC. In a professional app,
-     * the Controller should pass the full menu text/options to this method.
-     *
-     * @param role The role of the currently logged-in user ("Admin", "Lecturer", or "Student").
-     * @return The integer choice selected by the user. Returns 0 for unknown roles.
+     * @param title The title of the menu.
+     * @param options A list of menu options to display.
+     * @return The integer choice selected by the user.
      */
-    public int displayMenu(String role) {
+    public int displayMenu(String title, List<String> options) {
         displaySeparator();
-        System.out.println("Welcome, " + role + "!");
+        System.out.println(title);
 
-        // The logic for *what* menu items exist is handled here, which is an MVC violation.
-        // It should be moved to the Controller.
-        if (role.equals("Admin")) {
-            System.out.println("1. View Timetable (Lecturer/Programme/Student)");
-            System.out.println("2. Add New Module");
-            System.out.println("3. Add New Room");
-            System.out.println("4. Schedule New Session");
-            System.out.println("9. Logout");
-            System.out.println("0. Exit System");
-            return getUserChoice("Enter choice: ");
-        } else if (role.equals("Lecturer")) {
-            System.out.println("1. View My Timetable");
-            System.out.println("9. Logout");
-            System.out.println("0. Exit System");
-            return getUserChoice("Enter choice: ");
-        } else if (role.equals("Student")) {
-            System.out.println("1. View My Timetable");
-            System.out.println("9. Logout");
-            System.out.println("0. Exit System");
-            return getUserChoice("Enter choice: ");
+        for (int i = 0; i < options.size(); i++) {
+            System.out.println((i + 1) + ". " + options.get(i));
         }
 
-        // Default/Unknown user
-        return 0;
+        System.out.println("9. Logout");
+        System.out.println("0. Exit System");
+
+        return getUserChoice("Enter choice: ");
     }
 }
