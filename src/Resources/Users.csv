@@ -1,7 +1,26 @@
 ID,Name,Email,Password,Role,Group_ID (for Student)
-A001,Alice Admin,a.admin@uni.ie,admin123,Admin,
-L001,Dr. John Smith,j.smith@uni.ie,pass123,Lecturer,
-L002,Prof. Jane Doe,j.doe@uni.ie,pass123,Lecturer,
-S1001,Peter Student,p.student@uni.ie,pass123,Student,CS1A
-S1002,Mary Student,m.student@uni.ie,pass123,Student,CS1A
-S2001,Tom Student,t.student@uni.ie,pass123,Student,LM2B
+A001,Alice Admin,a.admin@ul.ie,admin123,Admin,
+L001,John Smith,j.smith@ul.ie,pass123,Lecturer,
+L002,Jane Doe,j.doe@ul.ie,pass123,Lecturer,
+L003,Sarah Connor,s.connor@ul.ie,pass123,Lecturer,
+L004,Alan Turing,a.turing@ul.ie,pass123,Lecturer,
+S1001,Peter Student,p.student@ul.ie,pass123,Student,CS1A
+S1002,Mary Student,m.student@ul.ie,pass123,Student,CS1A
+S1003,James O'Brien,j.obrien@ul.ie,pass123,Student,CS1A
+S1004,Linda McCarthy,l.mccarthy@ul.ie,pass123,Student,CS1A
+S1005,Robert Kelly,r.kelly@ul.ie,pass123,Student,CS1A
+S2001,Tom Student,t.student@ul.ie,pass123,Student,LM2B
+S2002,Patricia Ryan,p.ryan@ul.ie,pass123,Student,LM2B
+S2003,Michael Murphy,m.murphy@ul.ie,pass123,Student,LM2B
+S2004,Jennifer Walsh,j.walsh@ul.ie,pass123,Student,LM2B
+S2005,David O'Sullivan,d.osullivan@ul.ie,pass123,Student,LM2B
+S3001,Mark Twain,m.twain@ul.ie,pass123,Student,CS2A
+S3002,Emily Bronte,e.bronte@ul.ie,pass123,Student,CS2A
+S3003,Oscar Wilde,o.wilde@ul.ie,pass123,Student,CS2A
+S3004,James Joyce,j.joyce@ul.ie,pass123,Student,CS2A
+S3005,Samuel Beckett,s.beckett@ul.ie,pass123,Student,CS2A
+S4001,Isaac Newton,i.newton@ul.ie,pass123,Student,ME1A
+S4002,Marie Curie,m.curie@ul.ie,pass123,Student,ME1A
+S4003,Albert Einstein,a.einstein@ul.ie,pass123,Student,ME1A
+S4004,Nikola Tesla,n.tesla@ul.ie,pass123,Student,ME1A
+S4005,Ada Lovelace,a.lovelace@ul.ie,pass123,Student,ME1A
