@@ -19,6 +19,7 @@ public class Programme {
      */
     public Programme(String code, String name, int year, int semester, List<String> moduleCodes) {
         this.code = code;
+        this.name = name;
         this.year = year;
         this.semester = semester;
         this.code = code;
