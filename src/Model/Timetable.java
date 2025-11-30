@@ -101,7 +101,9 @@ public class Timetable {
                     .append(s.getDay())
                     .append(" at ").append(s.getStartTime())
                     .append(": ").append(s.getModuleCode())
-                    .append(" (").append(s.getRoomID()).append(")\n");
+                    .append(" (").append(s.getRoomID()).append(")\n")
+                    .append(" [").append(s.getSessionDuration()).append(" mins]\n");
+
         }
 
         return sb.toString();
