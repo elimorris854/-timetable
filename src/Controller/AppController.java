@@ -160,6 +160,9 @@ public class AppController {
             case 4: // Schedule New Session
                 handleScheduleSession();
                 break;
+            case 5: // Save to CSVs
+                handleSaveCSVs();
+                break;
             default:
                 cliView.displayMessage("Invalid choice. Please try again.");
                 break;
