@@ -54,7 +54,8 @@ Coordinates user actions between the view and the underlying services.
 
 1.  Open the project in IntelliJ or your preferred Java IDE.
 2.  Ensure the project SDK is set to **Java 17+**.
-3.  Run the `CLIView.java` file as configured in your IDE.
+3.  Run the `TimetableApp.java` file as configured in your IDE.
+4.  Login using valid credentials.
 
 ------------------------------------------------------------------------
 
