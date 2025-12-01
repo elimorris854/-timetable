@@ -1,6 +1,7 @@
 package Repositories;
 
 import Model.*;
+import Model.Module;
 import java.io.*;
 import java.time.DayOfWeek; // Required for Day enum
 import java.time.LocalTime; // Required for Time parsing
@@ -64,6 +65,9 @@ public class SessionRepository {
                     DayOfWeek day = DayOfWeek.valueOf(data[6].trim().toUpperCase());
                     LocalTime startTime = LocalTime.parse(data[7].trim());
                     int duration = Integer.parseInt(data[8].trim());
+
+                    Module m = moduleRepo.getByCode(moduleCode);
+                    String moduleName = (m != null) ? m.getName() : "Unknown Module";
 
                     Session session = new Session(sessionId, moduleCode, sessionType, lecturerId,
                             roomId, groupIds, day, startTime, duration);

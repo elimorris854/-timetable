@@ -6,7 +6,7 @@ import Model.User;
 import Repositories.*;
 import Model.Module;
 import Service.SchedulingService;
-import View.CLIView; // Import the view
+import View.CLIView;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalTime;
@@ -77,7 +77,6 @@ public class AppController {
                 menuOptions.add("Add New Room");
                 menuOptions.add("Schedule New Session");
                 menuOptions.add("Save to CSVs");
-                // menuOptions.add("Cancel Session"); // Feature reserved for teammate
             } else if (role.equals("Lecturer") || role.equals("Student")) {
                 menuOptions.add("View My Timetable");
             }
@@ -258,6 +257,9 @@ public class AppController {
             LocalTime startTime = LocalTime.parse(timeStr);
 
             int duration = cliView.getUserChoice("Duration in minutes (e.g., 60, 120): ");
+
+            Module m = moduleRepo.getByCode(moduleCode);
+            String moduleName = (m != null) ? m.getName() : "Unknown Module";
 
             // Create the session
             Session newSession = new Session(id, moduleCode, sessionType, lecturerID, roomID,
