@@ -1,14 +1,14 @@
 Code,Name,Lecture_Hours,Lab_Hours,Tutorial_Hours,Lecturer_IDs
-CS4013,Software Development Project,1,2,1,L001|L002
+CS4013,Software Development,1,2,1,L001|L002
 CS4014,Distributed Systems,3,0,1,L002
-CS4001,Computer Organisation,2,1,1,L004
+CS4001,Computer building,2,1,1,L004
 CS4002,Programming 101,2,2,1,L001
 CS4015,Databases,2,2,0,L001
 CS4100,Web Development,2,2,0,L003
 CS4003,Data Structures,3,1,1,L004
-LM101,Linear Mathematics,3,0,1,L002
-LM102,Introduction to History,3,0,1,L003
-LM103,Sociology Basics,3,0,1,L001
-ME5001,Engineering Mechanics,3,1,1,L003
+LM101,Linear Maths,3,0,1,L002
+LM102,Introduction to Python,3,0,1,L003
+LM103,Binary Coding,3,0,1,L001
+ME5001,Computer Mechanics,3,1,1,L003
 ME5002,Thermodynamics,3,1,1,L004
 ME5003,Fluid Mechanics,2,2,0,L004
