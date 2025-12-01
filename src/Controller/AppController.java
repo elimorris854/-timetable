@@ -244,7 +244,7 @@ public class AppController {
             String moduleCode = cliView.requestInput("Module Code (e.g., CS4013): ");
             String sessionType = cliView.requestInput("Session Type (e.g., Lecture, Lab): ");
             String lecturerID = cliView.requestInput("Lecturer ID (e.g., L001): ");
-            String roomID = cliView.requestInput("Room ID (e.g., KB1-11): ");
+            String roomID = cliView.requestInput("Room ID (e.g., KB1-001): ");
 
             // Simple group handling (comma-separated list)
             String groupsStr = cliView.requestInput("Student Group IDs (comma-separated, e.g., CS1A,CS1B): ");

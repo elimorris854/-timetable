@@ -1,1 +1,26 @@
-
+ID,Name,Email,Password,Role,Group_ID
+L003,Caoimhe Cahill,caoimhe.cahill@ul.ie,pass123,Lecturer,
+L002,Paddy Healy,patrick.healy@ul.ie,pass123,Lecturer,
+L001,Michael English,m.english@ul.ie,pass123,Lecturer,
+L004,Nikola Nikolov,nikola.nikolov@ul.ie,pass123,Lecturer,
+A001,Alan Ryan,alan.ryan@ul.ie,admin123,Admin,
+S3001,Steve Rodgers,steve.rodgers@ul.ie,pass123,Student,CS2A
+S3003,Peter Parker,peter.parker@ul.ie,pass123,Student,CS2A
+S1001,Eli Morris,eli.morris@ul.ie,pass123,Student,CS1A
+S3002,Tony Stark,tony.stark@ul.ie,pass123,Student,CS2A
+S1002,Jack Buttery,jack.buttery@ul.ie,pass123,Student,CS1A
+S3005,Lionel Messi,lionel.messi@ul.ie,pass123,Student,CS2A
+S1003,David O'Farrell,david.ofarrell@ul.ie,pass123,Student,CS1A
+S3004,Bruce Banner,bruce.banner@ul.ie,pass123,Student,CS2A
+S1004,Evan Hickey,evan.hickey@ul.ie,pass123,Student,CS1A
+S1005,Liam McCarthy,liam.mccarthy@ul.ie,pass123,Student,CS1A
+S4002,Cristiano Ronaldo,cristiano.ronaldo@ul.ie,pass123,Student,ME1A
+S4001,Mohammed Salah,mohammed.salah@ul.ie,pass123,Student,ME1A
+S2002,Charles Leclerc,charles.leclerc@ul.ie,pass123,Student,LM2B
+S4004,Harry Maguire,harry.maguire@ul.ie,pass123,Student,ME1A
+S2001,Sam Maguire,sam.maguire@ul.ie,pass123,Student,LM2B
+S4003,Troy Parrott,troy.parrott@ul.ie,pass123,Student,ME1A
+S2004,Lando Norris,lando.norris@ul.ie,pass123,Student,LM2B
+S2003,Max Verstappen,max.verstappen@ul.ie,pass123,Student,LM2B
+S4005,Boris Johnson,boris.johnson@ul.ie,pass123,Student,ME1A
+S2005,Lewis Hamilton,lewis.hamilton@ul.ie,pass123,Student,LM2B
